@@ -1,23 +1,21 @@
 let
-  genericPackages = { pkgs, ... }: {
-    environment.systemPackages = with pkgs; [
-      git
-      fzf
-      ripgrep
-      unzip
-      gnumake
-      gcc
-      nixd
-      nil
-    ];
+  genericPackages =
+    { pkgs, ... }:
+    {
+      environment.systemPackages = with pkgs; [
+        git
+        fzf
+        ripgrep
+        unzip
+        gnumake
+        gcc
+        home-manager
+        nixd
+        nil
+        zsh
+      ];
 
-    programs = {
-      zoxide = {
-        enable = true;
-	enableBashIntegration = true;
-      };
     };
-  };
 in
 {
   flake.modules.nixos.cli-tools = {
