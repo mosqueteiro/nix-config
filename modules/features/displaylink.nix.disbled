@@ -1,6 +1,0 @@
-# Come back to flaking this later, putting in the system config for now.
-# { self, inputs, ...}: {
-#   perSystem = { pkgs, ...}: {
-#     packages.myDisplayLink = {};
-#   }
-# }
