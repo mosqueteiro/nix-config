@@ -1,8 +1,9 @@
-{ inputs, ... }: {
+{ inputs, ... }:
+{
 
   # Setup of tools for dendritic pattern
 
-  flake.inputs = {
+  flake-file.inputs = {
 
     # Simplify Nix Flakes with module system
     flake-parts.url = "github:hercules-ci/flake-parts";
