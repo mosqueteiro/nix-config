@@ -1,0 +1,76 @@
+{
+  "pins": {
+    "den": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "vic",
+        "repo": "den"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "841dbf324012700e7e1557efc91021e08625101a",
+      "url": "https://github.com/vic/den/archive/841dbf324012700e7e1557efc91021e08625101a.tar.gz",
+      "hash": "02fs4a7smf95ixar7n06gc0zy4myp4ifpl41ljkrdj0jv9w0igd7"
+    },
+    "flake-aspects": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "vic",
+        "repo": "flake-aspects"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "56fa8d4d4772d58eb7f9d66c28c1cd2762b60423",
+      "url": "https://github.com/vic/flake-aspects/archive/56fa8d4d4772d58eb7f9d66c28c1cd2762b60423.tar.gz",
+      "hash": "1khsl7dxind5bypkr7d3j9zm5y6cw4nyi5mwnxjkx7264sj26jbb"
+    },
+    "home-manager": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "nix-community",
+        "repo": "home-manager"
+      },
+      "branch": "master",
+      "submodules": false,
+      "revision": "769e07ef8f4cf7b1ec3b96ef015abec9bc6b1e2a",
+      "url": "https://github.com/nix-community/home-manager/archive/769e07ef8f4cf7b1ec3b96ef015abec9bc6b1e2a.tar.gz",
+      "hash": "0r4hnbnlf99lzsazqkmmrwwpn1q88n5jif8kkwjv5sq2jl8w2dys"
+    },
+    "import-tree": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "vic",
+        "repo": "import-tree"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "c41e7d58045f9057880b0d85e1152d6a4430dbf1",
+      "url": "https://github.com/vic/import-tree/archive/c41e7d58045f9057880b0d85e1152d6a4430dbf1.tar.gz",
+      "hash": "1y0mp9ykp6k8px7m7k7ilj0iphwiyklp7igk2hkjax81v5v7dmh6"
+    },
+    "nixpkgs": {
+      "type": "Channel",
+      "name": "nixpkgs-unstable",
+      "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.05pre971056.b63fe7f000ad/nixexprs.tar.xz",
+      "hash": "1jmd5m15dlx6kqb26px44fg5m6xdwljql9533avm6z88ca5mw1g5"
+    },
+    "with-inputs": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "vic",
+        "repo": "with-inputs"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "012d6460dbab909dd4b109e714ca672a7bcdcee9",
+      "url": "https://github.com/vic/with-inputs/archive/012d6460dbab909dd4b109e714ca672a7bcdcee9.tar.gz",
+      "hash": "0b7shadcnrcbiqi2mgl9gpvm45zrb0fjcs7f74096njbfrfr4fzq"
+    }
+  },
+  "version": 5
+}
