@@ -6,18 +6,25 @@ See [From Zero to Den](https://den.oeiuwq.com/guides/from-zero-to-den/) and [No-
 
 ## Build/Lint/Test Commands
 
+When the user asks to "build" or "test" the configuration, run:
+
+```bash
+# Build the system without switching (validates config)
+nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
+```
+
+After changes are validated, present this command to the user to apply (requires sudo - agent cannot run this):
+
+```bash
+# Apply configuration to running system
+sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
+```
+
+Other useful commands:
+
 ```bash
 # Evaluate the configuration (type check)
 nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
-
-# Build the system without switching
-nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
-
-# Test configuration without adding to boot menu
-sudo nixos-rebuild test --file . -A nixosConfigurations.frameworkDesktop
-
-# Apply configuration to running system
-sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
 
 # Update dependencies (npins)
 npins upgrade

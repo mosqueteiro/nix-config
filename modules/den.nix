@@ -62,8 +62,8 @@
         programs = {
           git = {
             enable = true;
-            userName = "mosqueteiro";
-            userEmail = "nat3.th3.gr3at@gmail.com";
+            settings.user.email = "nat3.th3.gr3at@gmail.com";
+            settings.user.name = "mosqueteiro";
           };
 
           zsh = {
