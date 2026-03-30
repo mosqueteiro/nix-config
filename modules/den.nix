@@ -44,18 +44,36 @@
       { pkgs, ... }:
       {
         home.packages = [
+          pkgs.brave
           pkgs.vim
           pkgs.neovim
           pkgs.ripgrep
-          # other things for neovim: nerdfonts, npm, go, python
+          pkgs.nerd-fonts.daddy-time-mono
+          pkgs.python314
+          pkgs.go
           pkgs.wezterm
-          pkgs.brave
+          pkgs.opencode
         ];
 
-        programs.git = {
-          enable = true;
-          userName = "mosqueteiro";
-          userEmail = "nat3.th3.gr3at@gmail.com";
+        programs = {
+          git = {
+            enable = true;
+            userName = "mosqueteiro";
+            userEmail = "nat3.th3.gr3at@gmail.com";
+          };
+
+          fzf = {
+            enable = true;
+            enableBashIntegration = true;
+            enableZshIntegration = true;
+          };
+
+          zoxide = {
+            enable = true;
+            enableZshIntegration = true;
+            enableBashIntegration = true;
+            options = [ "--cmd cd" ];
+          };
         };
       };
   };
