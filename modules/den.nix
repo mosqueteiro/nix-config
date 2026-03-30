@@ -62,6 +62,10 @@
             userEmail = "nat3.th3.gr3at@gmail.com";
           };
 
+          zsh = {
+            enable = true;
+          };
+
           fzf = {
             enable = true;
             enableBashIntegration = true;
