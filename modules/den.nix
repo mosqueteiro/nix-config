@@ -16,7 +16,10 @@
   };
 
   den.aspects.frameworkDesktop = {
-    includes = [ den.provides.hostname ];
+    includes = [
+      den.provides.hostname
+      den.aspects.gaming
+    ];
     nixos =
       { pkgs, ... }:
       {
@@ -39,6 +42,13 @@
           pkgs.fastfetch
         ];
       };
+  };
+
+  den.aspects.gaming = {
+    nixos = { pkgs, ... }: {
+      programs.gamescope.enable = true;
+      programs.steam.enable = true;
+    };
   };
 
   den.aspects.mosqueteiro = {

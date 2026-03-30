@@ -60,11 +60,11 @@ den uses a **context-driven dispatch** system. Functions declare which context t
 
 ## Future changes
 
-- [ ] add GPU support
-- [ ] develop gaming aspect
 - [ ] develop AI hosting aspect
 - slowly move things out of the **_nixos** files into respective aspects of the code
 - [x] add Framework specific firmware ([nixos-hardware-framework-desktop])
+- [x] add GPU support
+- [x] develop gaming aspect
 
 ## Resources
 
