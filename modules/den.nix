@@ -38,6 +38,7 @@
     includes = [
       den.provides.define-user
       den.provides.primary-user
+      (den.provides.user-shell "zsh")
     ];
     homeManager =
       { pkgs, ... }:
@@ -47,8 +48,15 @@
           pkgs.neovim
           pkgs.ripgrep
           # other things for neovim: nerdfonts, npm, go, python
+          pkgs.wezterm
           pkgs.brave
         ];
+
+        programs.git = {
+          enable = true;
+          userName = "mosqueteiro";
+          userEmail = "nat3.th3.gr3at@gmail.com";
+        };
       };
   };
 }
