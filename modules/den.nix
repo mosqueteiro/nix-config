@@ -30,6 +30,8 @@
           pkgs.unzip
           pkgs.npins
           pkgs.brave
+          pkgs.btop
+          pkgs.fastfetch
         ];
       };
   };
@@ -78,6 +80,14 @@
             enable = true;
             enableZshIntegration = true;
             enableBashIntegration = true;
+          };
+
+          btop = {
+            enable = true;
+            settings = {
+              color_theme = "monokai";
+              vim_keys = true;
+            };
           };
         };
       };
