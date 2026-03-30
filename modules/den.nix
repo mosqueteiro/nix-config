@@ -51,6 +51,8 @@
           pkgs.nerd-fonts.daddy-time-mono
           pkgs.python314
           pkgs.go
+          pkgs.nil
+          pkgs.nixd
           pkgs.wezterm
           pkgs.opencode
         ];
@@ -76,7 +78,6 @@
             enable = true;
             enableZshIntegration = true;
             enableBashIntegration = true;
-            options = [ "--cmd cd" ];
           };
         };
       };
