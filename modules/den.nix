@@ -20,7 +20,11 @@
     nixos =
       { pkgs, ... }:
       {
-        imports = [ ./_nixos/configuration.nix ];
+        imports = [
+          ./_nixos/configuration.nix
+          inputs.nixos-hardware.nixosModules.framework-desktop-amd-ai-max-300-series
+        ];
+        environment.variables.EDITOR = "vim";
         environment.systemPackages = [
           pkgs.vim
           pkgs.neovim
@@ -45,6 +49,7 @@
     homeManager =
       { pkgs, ... }:
       {
+        home.sessionVariables.EDITOR = "nvim";
         home.packages = [
           pkgs.brave
           pkgs.vim

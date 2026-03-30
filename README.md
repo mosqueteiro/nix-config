@@ -60,14 +60,15 @@ den uses a **context-driven dispatch** system. Functions declare which context t
 
 ## Future changes
 
-- [ ] add Framework specific firmware
 - [ ] add GPU support
 - [ ] develop gaming aspect
 - [ ] develop AI hosting aspect
 - slowly move things out of the **_nixos** files into respective aspects of the code
+- [x] add Framework specific firmware ([nixos-hardware-framework-desktop])
 
 ## Resources
 
 [den]: https://den.oeiuwq.com/ "Context-aware Dendritic Nix"
 [From Zero to Den]: https://den.oeiuwq.com/guides/from-zero-to-den/
 [Context System]: https://den.oeiuwq.com/explanation/context-system/
+[nixos-hardware-framework-desktop]: https://github.com/NixOS/nixos-hardware/tree/master/framework/desktop/amd-ai-max-300-series
