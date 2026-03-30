@@ -24,6 +24,7 @@
           ./_nixos/configuration.nix
           inputs.nixos-hardware.nixosModules.framework-desktop-amd-ai-max-300-series
         ];
+        services.fwupd.enable = true;
         environment.variables.EDITOR = "vim";
         environment.systemPackages = [
           pkgs.vim
