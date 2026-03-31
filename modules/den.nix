@@ -43,7 +43,7 @@
         ];
 
         # Sound
-        # Enable sound with pipewire.
+        ## Enable sound with pipewire.
         services.pulseaudio.enable = false;
         security.rtkit.enable = true;
         services.pipewire = {
@@ -101,12 +101,32 @@
         programs = {
           git = {
             enable = true;
-            settings.user.email = "nat3.th3.gr3at@gmail.com";
-            settings.user.name = "mosqueteiro";
+            settings.user = {
+              name = "mosqueteiro";
+              email = "nat3.th3.gr3at@gmail.com";
+            };
           };
 
           zsh = {
             enable = true;
+            enableCompletion = true;
+            autosuggestion.enable = true;
+            syntaxHighlighting.enable = true;
+            initContent = lib.mkOrder 600 ''
+              bindkey -v
+              export KEYTIMEOUT=1
+            '';
+
+            shellAliases = {
+              den-build = "nixos-rebuild build --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
+              den-suwitch = "sudo nixos-rebuild switch --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
+            };
+            # initExtra = ''
+            #   local_file=~/.local/share/zsh/something.zsh
+            #   if [ -f $local_file ]; then
+            #     source $local_file
+            #   fi
+            # '';
           };
 
           fzf = {
