@@ -96,6 +96,7 @@
           pkgs.nixd
           pkgs.wezterm
           pkgs.opencode
+          pkgs.bitwarden-desktop
         ];
 
         programs = {
