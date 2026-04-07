@@ -27,7 +27,21 @@
           ./_nixos/configuration.nix
           inputs.nixos-hardware.nixosModules.framework-desktop-amd-ai-max-300-series
         ];
+
+        # Bootloader.
+        boot.loader.systemd-boot.enable = true;
+        boot.loader.efi.canTouchEfiVariables = true;
+        boot.initrd.systemd = {
+          enable = true;
+          tpm2.enable = true;
+        };
+
+        security.tpm2.enable = true;
+
+        zramSwap.enable = true;
+
         services.fwupd.enable = true;
+
         environment.variables.EDITOR = "vim";
         environment.systemPackages = [
           pkgs.vim
