@@ -94,6 +94,7 @@
           pkgs.ripgrep
           pkgs.nerd-fonts.daddy-time-mono
           pkgs.python314
+          pkgs.nodejs_24
           pkgs.go
           pkgs.nil
           pkgs.nixd
