@@ -32,10 +32,17 @@
         environment.systemPackages = [
           pkgs.vim
           pkgs.neovim
+          pkgs.fd
           pkgs.git
           pkgs.gcc
           pkgs.gnumake
+          pkgs.ghostscript
+          pkgs.tectonic
+          pkgs.imagemagick
+          pkgs.mermaid-cli
+          pkgs.sqlite
           pkgs.unzip
+          pkgs.wget
           pkgs.npins
           pkgs.brave
           pkgs.btop
