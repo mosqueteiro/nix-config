@@ -70,7 +70,10 @@
         hardware.bluetooth.enable = true;
 
         # Linker shim for precompiled binaries not built for NixOS
-        programs.nix-ld.enable = true;
+        programs.nix-ld = {
+          enable = true;
+          libraries = [ pkgs.icu ];
+        };
 
       };
   };
@@ -133,6 +136,7 @@
               den-build = "nixos-rebuild build --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
               den-suwitch = "sudo nixos-rebuild switch --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
             };
+
             # initExtra = ''
             #   local_file=~/.local/share/zsh/something.zsh
             #   if [ -f $local_file ]; then
