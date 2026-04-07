@@ -62,6 +62,9 @@
         # Bluetooth
         hardware.bluetooth.enable = true;
 
+        # Linker shim for precompiled binaries not built for NixOS
+        programs.nix-ld.enable = true;
+
       };
   };
 
