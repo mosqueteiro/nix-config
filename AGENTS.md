@@ -11,6 +11,8 @@ When the user asks to "build" or "test" the configuration, run:
 ```bash
 # Build the system without switching (validates config)
 nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
+# Or use the shell alias (if zsh is active)
+den-build
 ```
 
 After changes are validated, present this command to the user to apply (requires sudo - agent cannot run this):
@@ -18,6 +20,8 @@ After changes are validated, present this command to the user to apply (requires
 ```bash
 # Apply configuration to running system
 sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
+# Or use the shell alias (if zsh is active)
+sudo den-suwitch
 ```
 
 Other useful commands:
