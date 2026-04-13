@@ -19,6 +19,7 @@
     includes = [
       den.provides.hostname
       den.aspects.gaming
+      den.aspects.ai
     ];
     nixos =
       { pkgs, ... }:
@@ -59,7 +60,7 @@
           pkgs.wget
           pkgs.npins
           pkgs.brave
-          pkgs.btop
+          pkgs.btop-rocm
           pkgs.fastfetch
         ];
 
@@ -89,6 +90,71 @@
           libraries = [ pkgs.icu ];
         };
 
+      };
+  };
+
+  den.aspects.ai = {
+    nixos =
+      { pkgs, ... }:
+      {
+        # 1. Base ROCm & Graphics Support
+        hardware.graphics = {
+          enable = true;
+          enable32Bit = true;
+          extraPackages = with pkgs; [
+            rocmPackages.clr.icd # Enables HIP/ROCm
+          ];
+        };
+        hardware.amdgpu.opencl.enable = true;
+
+        environment.variables = {
+          # Required overrides for Strix Point/Halo (gfx1151)
+          HSA_OVERRIDE_GFX_VERSION = "11.5.1";
+          HCC_AMDGPU_TARGET = "gfx1151";
+        };
+
+        # 2. Native NixOS AI Services (Ollama & WebUI)
+        services.ollama = {
+          enable = true;
+          package = pkgs.ollama-rocm;
+          loadModels = [
+            "gemma4:e4b"
+            "gemma4:26b"
+            "gemma4:31b"
+          ];
+        };
+        services.open-webui.enable = true;
+
+        # 3. Environment for Modular (MAX & Mojo) via Pixi
+        programs.nix-ld = {
+          enable = true;
+          # Add standard libraries that pre-compiled conda/pixi binaries need
+          libraries = with pkgs; [
+            stdenv.cc.cc.lib
+            zlib
+            rocmPackages.rocm-runtime # Provides libhsa-runtime64.so.1
+            rocmPackages.clr # Provides libamdhip64.so
+            rocmPackages.clr.icd # OpenCL/HIP ICDs
+          ];
+        };
+
+        # 4. System Packages
+        environment.systemPackages = with pkgs; [
+          # AI/ML Utilities
+          rocmPackages.rocminfo
+          rocmPackages.rocm-smi
+          pixi
+        ];
+      };
+
+    homeManager =
+      { ... }:
+      {
+        home.sessionVariables = {
+          # Required overrides for Strix Point/Halo (gfx1151)
+          HSA_OVERRIDE_GFX_VERSION = "11.5.1";
+          HCC_AMDGPU_TARGET = "gfx1151";
+        };
       };
   };
 
@@ -173,6 +239,7 @@
 
           btop = {
             enable = true;
+            package = pkgs.btop-rocm;
             settings = {
               color_theme = "monokai";
               vim_keys = true;
