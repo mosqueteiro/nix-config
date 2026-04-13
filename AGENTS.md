@@ -93,7 +93,7 @@ Creates named sub-aspects: `den.aspects.tools.provides.editors`
 
 | File | Purpose |
 |------|---------|
-| `default.nix` | Entry point - connects import-tree and npins |
+| `default.nix` | Connects imports - import-tree and npins |
 | `modules/den.nix` | Main den configuration (hosts, users, aspects) |
 | `modules/_nixos/configuration.nix` | NixOS system config |
 | `modules/_nixos/hardware-configuration.nix` | Hardware (auto-generated, do not edit) |

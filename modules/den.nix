@@ -218,6 +218,7 @@
           pkgs.wezterm
           pkgs.opencode
           pkgs.bitwarden-desktop
+          pkgs.tree
         ];
 
         programs = {
@@ -243,6 +244,7 @@
               den-build = "nixos-rebuild build --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
               den-test = "sudo nixos-rebuild test --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
               den-suwitch = "sudo nixos-rebuild switch --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
+              cd = "z";
             };
 
             # initExtra = ''
