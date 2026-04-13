@@ -93,6 +93,32 @@
       };
   };
 
+  den.aspects.stable-nixpkgs = {
+    nixos =
+      { ... }:
+      {
+        nixpkgs.overlays = [
+          (final: prev: {
+            stable = import inputs.nixpkgs-stable {
+              system = prev.stdenv.hostPlatform.system;
+            };
+          })
+        ];
+      };
+
+    homeManager =
+      { ... }:
+      {
+        nixpkgs.overlays = [
+          (final: prev: {
+            stable = import inputs.nixpkgs-stable {
+              system = prev.stdenv.hostPlatform.system;
+            };
+          })
+        ];
+      };
+  };
+
   den.aspects.ai = {
     nixos =
       { pkgs, ... }:
@@ -172,6 +198,7 @@
       den.provides.define-user
       den.provides.primary-user
       (den.provides.user-shell "zsh")
+      den.aspects.stable-nixpkgs
     ];
     homeManager =
       { pkgs, ... }:
@@ -180,7 +207,7 @@
         home.packages = [
           pkgs.brave
           pkgs.vim
-          pkgs.neovim
+          pkgs.stable.neovim
           pkgs.ripgrep
           pkgs.nerd-fonts.daddy-time-mono
           pkgs.python314
@@ -214,6 +241,7 @@
 
             shellAliases = {
               den-build = "nixos-rebuild build --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
+              den-test = "sudo nixos-rebuild test --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
               den-suwitch = "sudo nixos-rebuild switch --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop";
             };
 

@@ -71,6 +71,12 @@
       "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.05pre977011.456e8a9468b9/nixexprs.tar.xz",
       "hash": "sha256-KbwJuc+hYt9EOOPNDok8MfWNonZJibcwGnJ1mT+eX8Q="
     },
+    "nixpkgs-stable": {
+      "type": "Channel",
+      "name": "nixos-25.11",
+      "url": "https://releases.nixos.org/nixos/25.11/nixos-25.11.9067.54170c54449e/nixexprs.tar.xz",
+      "hash": "sha256-VLpXI9ENHktgKNXHXFLFLLic6crXitfAcbogAOMG35s="
+    },
     "with-inputs": {
       "type": "Git",
       "repository": {
