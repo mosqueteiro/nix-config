@@ -18,6 +18,7 @@ npins add github vic import-tree   -b main  # for auto-importing ./modules
 npins add github vic den           -b main  # Den itself, of course
 npins add github vic with-inputs   -b main  # flake-like inputs without Nix flakes.
 npins add github nix-community home-manager --branch master # OPTIONAL home integration
+npins add channel --name nixpkgs-stable nixos-25.11 # OPTIONAL stable package source
 ```
 
 ### modules/
@@ -57,6 +58,18 @@ den uses a **context-driven dispatch** system. Functions declare which context t
 ```
 
 **Aspects** consolidate a single concern across Nix classes (NixOS, home-manager, darwin). This system is explained in the [Context System] documentation.
+
+### Selective Stable Packages
+
+This repo keeps `nixpkgs-unstable` as the main package source, and exposes `nixos-25.11` as `pkgs.stable` through `den.aspects.stable-nixpkgs` in `modules/den.nix`.
+
+Use this when you need a specific package from stable without downgrading the whole system:
+
+```nix
+home.packages = [
+  pkgs.stable.neovim
+];
+```
 
 ## Future changes
 
