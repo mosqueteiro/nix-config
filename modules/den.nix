@@ -90,6 +90,18 @@
           libraries = [ pkgs.icu ];
         };
 
+        # devShell framework
+        nix.settings.experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        programs.direnv = {
+          enable = true;
+          nix-direnv = {
+            enable = true;
+          };
+        };
+
       };
   };
 
