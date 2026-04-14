@@ -231,7 +231,14 @@
           pkgs.opencode
           pkgs.bitwarden-desktop
           pkgs.tree
+          pkgs.discord
         ];
+
+        nixpkgs = {
+          config = {
+            allowUnfree = true;
+          };
+        };
 
         programs = {
           git = {
