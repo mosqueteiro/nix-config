@@ -1,0 +1,292 @@
+-- allium: 3
+-- nix-system.allium
+
+-- Scope: NixOS/home-manager system configuration for Framework Desktop
+-- Includes: Host, user, desktop environment, AI stack, gaming stack, packages
+-- Excludes:
+--   - Third-party service integrations (external)
+--   - Application state (runtime-generated)
+--   - Network-specific proxy configurations (deployment)
+
+external input Nixpkgs {
+    unstable: PackageTree
+    stable: PackageTree
+}
+
+external input Den {
+    framework: Aspect
+    provides: Aspect
+}
+
+external input FlakeAspects {
+    gaming: Aspect
+    ai: Aspect
+}
+
+external input NixOSHardware {
+    framework-desktop-amd-ai-max-300-series: HardwareProfile
+}
+
+entity Host {
+    name: String
+    architecture: x86_64-linux
+    users: Set<User>
+    aspects: Set<Aspect>
+}
+
+entity User {
+    name: String
+    isPrimary: Boolean
+    shell: zsh
+    stateVersion: String
+    homeManager: HomeManagerConfig
+}
+
+entity HomeManagerConfig {
+    packages: Set<Package>
+    programs: Set<ProgramConfig>
+    sessionVariables: Map<String, String>
+}
+
+entity ProgramConfig {
+    name: String
+    enabled: Boolean
+    settings: Map<String, Any>
+}
+
+entity Package {
+    name: String
+    source: unstable | stable
+}
+
+entity DesktopEnvironment {
+    type: Plasma6
+    displayManager: SDDM
+    xserver: X11
+    locale: en_US.UTF-8
+    timezone: America/Denver
+}
+
+entity Aspect {
+    name: String
+    nixos: NixOSConfig?
+    homeManager: HomeManagerConfig?
+    includes: Set<Aspect>
+}
+
+entity NixOSConfig {
+    packages: Set<Package>
+    services: Set<Service>
+    boot: BootConfig
+    security: SecurityConfig
+}
+
+entity BootConfig {
+    bootloader: systemd-boot
+    efi: Boolean
+    initrd: InitrdConfig
+    zramSwap: Boolean
+}
+
+entity InitrdConfig {
+    systemd: Boolean
+    tpm2: Boolean
+}
+
+entity SecurityConfig {
+    tpm2: Boolean
+}
+
+entity Service {
+    name: String
+    enabled: Boolean
+    config: Map<String, Any>
+}
+
+entity GraphicsStack {
+    enable: Boolean
+    enable32Bit: Boolean
+    rocm: Boolean
+    extraPackages: Set<Package>
+}
+
+entity AIService {
+    name: String
+    enabled: Boolean
+    models: Set<String>
+    runtime: ROCm
+}
+
+entity ROCm {
+    version: String
+    gpuArchitecture: gfx1151
+}
+
+rule ConfigureHost {
+    when: ConfigureHost(host, user)
+
+    ensures: Host.created(
+        name: host.name,
+        architecture: x86_64-linux,
+        users: [user],
+        aspects: host.aspects
+    )
+    ensures: DesktopEnvironment.created(
+        type: Plasma6,
+        displayManager: SDDM,
+        xserver: X11
+    )
+}
+
+rule ConfigureUser {
+    when: ConfigureUser(user)
+
+    ensures: User.created(
+        name: user.name,
+        isPrimary: true,
+        shell: zsh,
+        stateVersion: "25.11"
+    )
+    ensures: HomeManagerConfig.created(
+        packages: user.packages,
+        programs: user.programs,
+        sessionVariables: user.sessionVariables
+    )
+}
+
+rule EnableAspect {
+    when: EnableAspect(aspect)
+
+    ensures: Aspect.created(
+        name: aspect.name,
+        nixos: aspect.nixos,
+        homeManager: aspect.homeManager,
+        includes: aspect.includes
+    )
+}
+
+rule ConfigureFrameworkDesktop {
+    when: ConfigureFrameworkDesktop()
+
+    ensures: NixOSConfig.created(
+        packages: [vim, neovim, fd, git, gcc, gnumake, ghostscript, tectonic, imagemagick, mermaid-cli, sqlite, unzip, wget, npins, brave, btop-rocm, fastfetch],
+        services: [pipewire, bluetooth, fwupd],
+        boot: BootConfig(
+            bootloader: systemd-boot,
+            efi: true,
+            initrd: InitrdConfig(systemd: true, tpm2: true),
+            zramSwap: true
+        ),
+        security: SecurityConfig(tpm2: true)
+    )
+}
+
+rule ConfigureGaming {
+    when: ConfigureGaming()
+
+    ensures: Service.gamescope.enabled = true
+    ensures: Service.steam.enabled = true
+}
+
+rule ConfigureAI {
+    when: ConfigureAI()
+
+    ensures: GraphicsStack(
+        enable: true,
+        enable32Bit: true,
+        rocm: true,
+        extraPackages: [rocmPackages.clr.icd]
+    )
+    ensures: AIService(
+        name: ollama,
+        enabled: true,
+        models: ["gemma4:e4b", "gemma4:26b", "gemma4:31b"],
+        runtime: ROCm(version: "11.5.1", gpuArchitecture: gfx1151)
+    )
+    ensures: AIService(
+        name: open-webui,
+        enabled: true,
+        models: [],
+        runtime: ROCm(version: "11.5.1", gpuArchitecture: gfx1151)
+    )
+    ensures: environmentVariables = {
+        HSA_OVERRIDE_GFX_VERSION: "11.5.1",
+        HCC_AMDGPU_TARGET: "gfx1151"
+    }
+}
+
+rule ConfigureAudio {
+    when: ConfigureAudio()
+
+    ensures: Service.pipewire.enabled = true
+    ensures: Service.pipewire.alsa = true
+    ensures: Service.pipewire.pulse = true
+    ensures: Service.rtkit.enabled = true
+}
+
+rule ConfigureUserPackages {
+    when: ConfigureUserPackages()
+
+    ensures: homeManager.packages = [
+        brave, vim, stable.neovim, ripgrep, nerd-fonts.daddy-time-mono,
+        python314, nodejs_24, go, nil, nixd, wezterm, opencode,
+        bitwarden-desktop, tree, nix-direnv
+    ]
+    ensures: homeManager.programs.direnv.enable = true
+    ensures: homeManager.programs.direnv.nixDirectory = true
+}
+
+rule ConfigureUserPrograms {
+    when: ConfigureUserPrograms()
+
+    ensures: ProgramConfig(
+        name: git,
+        enabled: true,
+        settings: { user: { name: "mosqueteiro", email: "nat3.th3.gr3at@gmail.com" } }
+    )
+    ensures: ProgramConfig(
+        name: zsh,
+        enabled: true,
+        settings: {
+            enableCompletion: true,
+            autosuggestion: true,
+            syntaxHighlighting: true
+        }
+    )
+    ensures: ProgramConfig(
+        name: fzf,
+        enabled: true
+    )
+    ensures: ProgramConfig(
+        name: zoxide,
+        enabled: true
+    )
+    ensures: ProgramConfig(
+        name: btop,
+        enabled: true,
+        settings: { color_theme: "monokai", vim_keys: true }
+    )
+    ensures: homeManager.sessionVariables.EDITOR = "nvim"
+}
+
+rule ConfigureUserShell {
+    when: ConfigureUserShell()
+
+    ensures: shellAliases = {
+        den-build: "nixos-rebuild build --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop",
+        den-test: "sudo nixos-rebuild test --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop",
+        den-suwitch: "sudo nixos-rebuild switch --file ~/nix-config/ -A nixosConfigurations.frameworkDesktop"
+    }
+}
+
+rule AddStableNixpkgs {
+    when: AddStableNixpkgs()
+
+    ensures: nixpkgs.overlays.stable = stable
+}
+
+rule EnableNixFlakes {
+    when: EnableNixFlakes()
+
+    ensures: nix.extraExperimentalFeatures = ["flakes" "nix-command"]
+}
