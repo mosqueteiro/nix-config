@@ -29,6 +29,22 @@
           inputs.nixos-hardware.nixosModules.framework-desktop-amd-ai-max-300-series
         ];
 
+        # X11 & Desktop
+        services.xserver.enable = true;
+        services.xserver.xkb = {
+          layout = "us";
+          variant = "";
+        };
+
+        services.displayManager.sddm.enable = true;
+        services.displayManager.sddm.settings = {
+          General = {
+            Numlock = "on";
+          };
+        };
+
+        services.desktopManager.plasma6.enable = true;
+
         # Bootloader.
         boot.loader.systemd-boot.enable = true;
         boot.loader.efi.canTouchEfiVariables = true;
