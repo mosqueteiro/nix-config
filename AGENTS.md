@@ -1,114 +1,172 @@
-# AGENTS.md
+# Agent Guidelines for Nix Configuration
 
-Welcome to the `nix-config` repository! This document contains instructions, guidelines, and context designed to help AI coding assistants (agents) operate efficiently and safely in this codebase.
+This is a NixOS/home-manager configuration repository using the [den](https://den.oeiuwq.com/) framework (no-flake template). It manages a Framework Desktop system with NixOS and Plasma6.
 
-## Repository Overview
+See [From Zero to Den](https://den.oeiuwq.com/guides/from-zero-to-den/) and [No-Flake Template](https://den.oeiuwq.com/tutorials/noflake/) for the template this was built from.
 
-This is a NixOS configuration repository organized using a **dendritic module pattern**. It leverages `flake-parts` and `import-tree` to automatically structure and compose modules.
+## Build/Lint/Test Commands
 
-**CRITICAL RULE: DO NOT EDIT `flake.nix` DIRECTLY.**
-The `flake.nix` file is automatically generated. Any changes must be done by modifying the Nix files inside the `modules/` directory. If you need to regenerate the flake, ask the user to run the following command (as it requires `sudo` privileges which agents lack):
+When the user asks to "build" or "test" the configuration, run:
+
 ```bash
-nix run .#write-flake
+# Build the system without switching (validates config)
+nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
+# Or use the shell alias (if zsh is active)
+den-build
 ```
 
-## 1. Build, Lint, and Test Commands
+After changes are validated, present this command to the user to apply (requires sudo - agent cannot run this):
 
-### Building Configurations
-Since this repository defines NixOS and Home Manager systems, you will primarily verify changes by evaluating or building the configurations.
+```bash
+# Apply configuration to running system
+sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
+# Or use the shell alias (if zsh is active)
+sudo den-suwitch
+```
 
-- **Check Flake Validity:** Validate the structure and syntax of the entire flake:
-  ```bash
-  nix flake check
-  ```
-- **Show Flake Outputs:** See what systems and packages are available:
-  ```bash
-  nix flake show
-  ```
-- **Build the `frameworkDesktop` Host:**
-  To build the system configuration for the Framework laptop without activating it:
-  ```bash
-  nixos-rebuild build --flake .#frameworkDesktop
-  ```
-  *(Note: To activate the configuration, ask the user to run `sudo nixos-rebuild switch --flake .#frameworkDesktop`, as agents lack the required `sudo` privileges.)*
-- **Build a Home Manager Configuration (if present):**
-  ```bash
-  home-manager build --flake .#mosqueteiro@frameworkDesktop
-  ```
+Other useful commands:
 
-### Linting and Formatting
-Consistent code style is enforced via Nix formatters.
-- **Format all files:**
-  ```bash
-  nix fmt
-  ```
-  *(Note: if `nix fmt` is not defined in the flake, use `nixpkgs-fmt .` or `alejandra .` as a fallback.)*
+```bash
+# Evaluate the configuration (type check)
+nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
-### Running a Single "Test"
-In a declarative Nix configuration, testing typically means evaluating a specific module or expression to ensure it builds without syntax or evaluation errors.
-- **Evaluate a specific configuration:**
-  To test if a host evaluates correctly without building the entire system closure:
-  ```bash
-  nix eval .#nixosConfigurations.frameworkDesktop.config.system.build.toplevel.drvPath
-  ```
-- **Debugging Nix errors:**
-  When a Nix command fails, use `--show-trace` to get a detailed stack trace:
-  ```bash
-  nix flake check --show-trace
-  ```
+# Update dependencies (npins)
+npins upgrade
+```
 
-## 2. Code Style Guidelines
+### Linting/Formatting
 
-### File Structure and Imports
-- **Dendritic Pattern:** Do not manually add `import ./some-file.nix` to `flake.nix`. Instead, place your new Nix modules inside the `modules/` directory. The `import-tree` tool automatically discovers and imports them.
-- **Directory Layout:**
-  - `modules/hosts/`: Host-specific configurations (e.g., `framework-desktop`).
-  - `modules/users/`: User-specific configurations (e.g., `mosqueteiro`).
-  - `modules/system/`: System-wide NixOS configurations and base modules.
-  - `modules/nix/`: Core Nix and flake-parts configuration (e.g., `lib.nix`).
-- **Use `flake-parts`:** Rely on `flake-parts` module system (`perSystem`, `flake`, etc.) to declare outputs.
+```bash
+nil check /path/to/file.nix  # Check a file with nil (Nix language server)
+nix fmt                      # Format Nix code
+nix eval . --strict 2>&1 | grep -i error  # Check for errors
+```
 
-### Naming Conventions
-- **Files and Directories:** Use `kebab-case` for file names and directory names (e.g., `framework-desktop`, `flake-parts.nix`).
-- **Nix Variables and Attributes:** Use `camelCase` for internal variable names, functions, and NixOS option declarations (e.g., `frameworkDesktop`, `isNormalUser`).
-- **Hostnames:** Typically follow `kebab-case` or match their folder name directly.
+## den Framework Concepts
 
-### Formatting and Syntax
-- Use 2 spaces for indentation.
-- Always use spaces around operators (e.g., `foo = bar;` not `foo=bar;`).
-- Prefer `with pkgs; [ ... ]` for long package lists to improve readability, but avoid `with pkgs;` at the top level of a module to prevent namespace pollution.
-- Use multi-line strings (`''`) for complex scripts or configuration file contents.
+Read [Core Principles](https://den.oeiuwq.com/explanation/core-principles/) for background.
 
-### Types and Options
-- When creating custom modules, always use the `lib.mkOption` system to declare types, default values, and descriptions.
-- Example:
-  ```nix
-  options.myModule.enable = lib.mkOption {
-    type = lib.types.bool;
-    default = false;
-    description = "Enable my custom module";
-  };
-  ```
+### Aspects
 
-### Error Handling
-- Use `lib.mkIf` to conditionally apply configurations based on other options.
-- Use `lib.asserts` or the `assertions = [ ... ]` NixOS option if a specific combination of configurations is invalid or unsafe.
-  ```nix
-  config = lib.mkIf config.myModule.enable {
-    assertions = [
-      {
-        assertion = config.services.xserver.enable;
-        message = "myModule requires X11 to be enabled.";
-      }
-    ];
-  };
-  ```
+Aspects consolidate a single concern across Nix classes (nixos, homeManager, darwin):
 
-## 3. General Best Practices
+```nix
+den.aspects.myFeature = {
+  nixos = { pkgs, ... }: { /* NixOS config */ };
+  homeManager = { pkgs, ... }: { /* home-manager config */ };
+};
+```
 
-- **Modularity:** Keep modules small and focused on a single responsibility (e.g., separating hardware configuration, desktop environment, and CLI tools into different files).
-- **Immutability and Purity:** Never rely on the state of the local file system outside of the flake. All inputs must be declared in `inputs` in the respective `flake-parts` files.
-- **Comments:** Document *why* a complex configuration is necessary, especially if working around a known bug or hardware quirk (e.g., DisplayLink configurations).
+### Context-Driven Dispatch
 
----
-*End of AGENTS.md*
+Functions declare which context they need - Den runs them only when that context exists:
+
+```nix
+# Runs everywhere
+{ nixos.foo = 1; }
+# Runs only when {host} exists
+({ host, ... }: { nixos.networking.hostName = host.hostName; })
+# Runs only when {host, user} exist
+({ host, user, ... }: { nixos.users.users.${user.userName}.extraGroups = [ "wheel" ]; })
+```
+
+See [Context System](https://den.oeiuwq.com/explanation/context-system/) for details.
+
+### Includes
+
+Aspects form a DAG through `includes`:
+
+```nix
+den.aspects.workstation = {
+  includes = [ den.aspects.dev-tools den.provides.primary-user ];
+  nixos.services.xserver.enable = true;
+};
+```
+
+### Provides
+
+Creates named sub-aspects: `den.aspects.tools.provides.editors`
+
+## This Repository's Structure
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `default.nix` | Connects imports - import-tree and npins |
+| `modules/den.nix` | Main den configuration (hosts, users, aspects) |
+| `modules/_nixos/configuration.nix` | NixOS system config |
+| `modules/_nixos/hardware-configuration.nix` | Hardware (auto-generated, do not edit) |
+| `npins/sources.json` | Pinned dependencies |
+
+### Host/User Declaration
+
+```nix
+den.hosts.x86_64-linux.frameworkDesktop.users = {
+  mosqueteiro = { };
+};
+```
+
+### Adding Packages
+
+**NixOS (system-wide):**
+```nix
+den.aspects.frameworkDesktop.nixos = { pkgs, ... }: {
+  environment.systemPackages = [ pkgs.vim ];
+};
+```
+
+**home-manager (per user):**
+```nix
+den.aspects.mosqueteiro.homeManager = { pkgs, ... }: {
+  home.packages = [ pkgs.vim ];
+};
+```
+
+### Adding Users
+
+See [Declare Hosts & Users](https://den.oeiuwq.com/guides/declare-hosts/) guide.
+
+## Code Style
+
+- **Indentation**: 2 spaces, no tabs
+- **Attribute Sets**: `{ key = value; }` (space after colon)
+- **Lists**: Space-separated `[ item1 item2 ]`
+- **Functions**: `{ arg }: expression` over `args: expression`
+- **Files**: kebab-case (`hardware-configuration.nix`)
+- **Options**: camelCase (`boot.loader.systemd-boot.enable`)
+- **Error Handling**: `lib.mkDefault`, `lib.mkForce`, `assert`, `throw`
+
+## Working with npins
+
+- Do NOT edit `npins/default.nix` or `npins/sources.json` manually
+- Use `npins add` and `npins upgrade` to manage dependencies
+
+## Debugging Strategies
+
+REPL is interactive - use for user guidance. Agents should use:
+
+1. **Type checking**: `nix eval . --attr ...` catches type errors
+2. **Trace context**: Add `builtins.trace` to see available context:
+   ```nix
+   den.aspects.foo.includes = [ ({ host, ... }@ctx: builtins.trace ctx { nixos.foo = 1; }) ];
+   ```
+3. **Inspect config**: `nix eval . --attr nixosConfigurations.frameworkDesktop.config.networking.hostName`
+4. **Reference**: See [Debug Guide](https://den.oeiuwq.com/guides/debug/)
+
+## Relevant Documentation Links
+
+- [From Zero to Den](https://den.oeiuwq.com/guides/from-zero-to-den/)
+- [Configure Aspects](https://den.oeiuwq.com/guides/configure-aspects/)
+- [Declare Hosts & Users](https://den.oeiuwq.com/guides/declare-hosts/)
+- [den.schema Reference](https://den.oeiuwq.com/reference/schema/)
+- [den.aspects Reference](https://den.oeiuwq.com/reference/aspects/)
+- [Context System](https://den.oeiuwq.com/explanation/context-system/)
+- [Core Principles](https://den.oeiuwq.com/explanation/core-principles/)
+
+## Notes
+
+- State version: "25.11"
+- System: btrfs with LUKS encryption
+- Desktop: Plasma6 with SDDM
+- Framework: uses den's `frameworkDesktop` aspect and `mosqueteiro` user aspect

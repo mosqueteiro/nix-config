@@ -1,0 +1,5 @@
+# (Neo)vim files
+.session.vim
+
+# Nix build artifact
+result
