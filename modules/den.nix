@@ -20,6 +20,7 @@
       den.provides.hostname
       den.aspects.gaming
       den.aspects.ai
+      den.aspects.local-pkgs
     ];
     nixos =
       { pkgs, ... }:
@@ -78,6 +79,7 @@
           pkgs.brave
           pkgs.btop-rocm
           pkgs.fastfetch
+          pkgs.allium-tools
         ];
 
         # Sound
@@ -219,6 +221,23 @@
         programs.gamescope.enable = true;
         programs.steam.enable = true;
       };
+  };
+
+  den.aspects.local-pkgs = {
+    nixos = { ... }: {
+      nixpkgs.overlays = [
+        (final: prev: {
+          allium-tools = final.callPackage ../pkgs/allium-tools { };
+        })
+      ];
+    };
+    homeManager = { ... }: {
+      nixpkgs.overlays = [
+        (final: prev: {
+          allium-tools = final.callPackage ../pkgs/allium-tools { };
+        })
+      ];
+    };
   };
 
   den.aspects.mosqueteiro = {
