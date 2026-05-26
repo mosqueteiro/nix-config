@@ -247,6 +247,7 @@
           pkgs.opencode
           pkgs.bitwarden-desktop
           pkgs.tree
+          pkgs.signal-desktop
           pkgs.discord
         ];
 
