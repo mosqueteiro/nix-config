@@ -224,20 +224,24 @@
   };
 
   den.aspects.local-pkgs = {
-    nixos = { ... }: {
-      nixpkgs.overlays = [
-        (final: prev: {
-          allium-tools = final.callPackage ../pkgs/allium-tools { };
-        })
-      ];
-    };
-    homeManager = { ... }: {
-      nixpkgs.overlays = [
-        (final: prev: {
-          allium-tools = final.callPackage ../pkgs/allium-tools { };
-        })
-      ];
-    };
+    nixos =
+      { ... }:
+      {
+        nixpkgs.overlays = [
+          (final: prev: {
+            allium-tools = final.callPackage ../pkgs/allium-tools { };
+          })
+        ];
+      };
+    homeManager =
+      { ... }:
+      {
+        nixpkgs.overlays = [
+          (final: prev: {
+            allium-tools = final.callPackage ../pkgs/allium-tools { };
+          })
+        ];
+      };
   };
 
   den.aspects.mosqueteiro = {
