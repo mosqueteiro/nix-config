@@ -177,6 +177,7 @@
             "gemma4:e4b"
             "gemma4:26b"
             "gemma4:31b"
+            "qwen3-coder-next"
           ];
         };
         services.open-webui.enable = true;
