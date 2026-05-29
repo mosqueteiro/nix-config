@@ -1,0 +1,51 @@
+# Starship configuration
+
+format = '''
+[╭─\(](cyan) $all[\)](cyan)$fill[\(](cyan) $username$hostname [\)─╮ ](cyan)
+[╰─\(](cyan) $jobs$os[\)─](cyan)$character'''
+
+right_format = '''$status$cmd_duration[─\(](cyan) $time ${custom.date} [\)─╯](cyan)'''
+
+# [character]
+# style = 'bold cyan'
+
+[fill]
+symbol = "─"
+style = "cyan"
+
+[line_break]
+disabled = true
+
+[directory]
+style = 'bold green'
+truncate_to_repo = false
+
+[time]
+disabled = false
+format = '🕙[$time]($style)'
+style = 'bold yellow'
+
+[git_branch]
+ignore_bare_repo = true
+
+[username]
+show_always = true
+style_user = 'bold #D60270'
+format = '[$user]($style)[@](#9B4F96)'
+
+[hostname]
+format = '[$ssh_symbol$hostname]($style)'
+style = "bold #0038A8"
+ssh_only = false
+
+[status]
+disabled = false
+
+[os]
+disabled = false
+
+[custom.date]
+command = "date '+%a,%b%d'"
+when = "true"
+format = '[$symbol($output)]($style)'
+style = 'bold #ffbf00'

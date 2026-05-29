@@ -322,6 +322,11 @@
             # '';
           };
 
+          starship = {
+            enable = true;
+            settings = pkgs.lib.importTOML ./starship.toml;
+          };
+
           fzf = {
             enable = true;
             enableBashIntegration = true;
