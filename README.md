@@ -40,6 +40,9 @@ nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
 
 # Apply configuration to running system
 sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
+
+# Update dependencies (if needed)
+npins update
 ```
 
 ## How It Works
@@ -55,6 +58,21 @@ den uses a **context-driven dispatch** system. Functions declare which context t
 
 # Runs only when {host, user} exist
 ({ host, user, ... }: { nixos.users.users.${user.userName}.extraGroups = [ "wheel" ]; })
+```
+
+After running `npins update`, build and test with:
+
+```shell
+nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
+sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
+```
+
+### Home Manager version warning
+
+The current setup uses `nixpkgs-unstable` (26.11) while Home Manager 26.05 is pinned. This produces a non-blocking warning about mismatched versions. To silence it, add to your homeManager config:
+
+```nix
+home.enableNixpkgsReleaseCheck = false;
 ```
 
 **Aspects** consolidate a single concern across Nix classes (NixOS, home-manager, darwin). This system is explained in the [Context System] documentation.

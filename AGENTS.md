@@ -31,7 +31,7 @@ Other useful commands:
 nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
 # Update dependencies (npins)
-npins upgrade
+npins update
 ```
 
 ### Linting/Formatting
@@ -140,7 +140,8 @@ See [Declare Hosts & Users](https://den.oeiuwq.com/guides/declare-hosts/) guide.
 ## Working with npins
 
 - Do NOT edit `npins/default.nix` or `npins/sources.json` manually
-- Use `npins add` and `npins upgrade` to manage dependencies
+- Use `npins add` and `npins update` to manage dependencies
+- When upgrading den itself (`den` pin), check the [den changelog](https://den.oeiuwq.com/releases/) for any breaking changes
 
 ## Debugging Strategies
 
