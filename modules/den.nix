@@ -280,6 +280,7 @@
           pkgs.tree
           pkgs.signal-desktop
           pkgs.discord
+          pkgs.devenv
         ];
 
         nixpkgs = {
