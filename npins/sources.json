@@ -52,6 +52,58 @@
       "url": "https://github.com/vic/import-tree/archive/d321337efd0f23a9eb14a42adb7b2c29313ab274.tar.gz",
       "hash": "sha256-Jjuz5CmSkur8KvLDoGa+vylEp+RkQtv4mt/qcMznpH0="
     },
+    "nix-amd-ai": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "noamsto",
+        "repo": "nix-amd-ai"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "d6b26648de54f890bb0041ed1f3f8fd33ffbbd2a",
+      "url": "https://github.com/noamsto/nix-amd-ai/archive/d6b26648de54f890bb0041ed1f3f8fd33ffbbd2a.tar.gz",
+      "hash": "sha256-/LYKTdilTPp8VP24Dvpkf7SxliGM2Ra1UmFVzlI+BFk="
+    },
+    "nix-amd-ai-flake-parts": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "hercules-ci",
+        "repo": "flake-parts"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
+      "url": "https://github.com/hercules-ci/flake-parts/archive/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb.tar.gz",
+      "hash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4="
+    },
+    "nix-amd-ai-nix-darwin": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "nix-darwin",
+        "repo": "nix-darwin"
+      },
+      "branch": "master",
+      "submodules": false,
+      "revision": "a1fa429e945becaf60468600daf649be4ba0350c",
+      "url": "https://github.com/nix-darwin/nix-darwin/archive/a1fa429e945becaf60468600daf649be4ba0350c.tar.gz",
+      "hash": "sha256-rCPytmKNjctLloB6UgK5CRrHSwV4b0ygxtJLPPp8R14="
+    },
+    "nix-amd-ai-nixpkgs-lib": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib"
+      },
+      "branch": "master",
+      "submodules": false,
+      "revision": "de42d44212d207476489bce163375d8306a26d59",
+      "url": "https://github.com/nix-community/nixpkgs.lib/archive/de42d44212d207476489bce163375d8306a26d59.tar.gz",
+      "hash": "sha256-0iaTCZDEORJeWamOjfDZaoZZx686f7QO5oL3ynmj+ew="
+    },
     "nixos-hardware": {
       "type": "Git",
       "repository": {

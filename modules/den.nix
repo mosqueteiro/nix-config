@@ -20,6 +20,7 @@
       den.provides.hostname
       den.aspects.gaming
       den.aspects.ai
+      den.aspects.lemonade
       den.aspects.local-pkgs
     ];
     nixos =
@@ -116,10 +117,16 @@
         };
 
         # devShell framework
-        nix.settings.experimental-features = [
-          "nix-command"
-          "flakes"
-        ];
+        nix.settings = {
+          experimental-features = [
+            "nix-command"
+            "flakes"
+          ];
+          substituters = [ "https://nix-amd-ai.cachix.org" ];
+          trusted-public-keys = [
+            "nix-amd-ai.cachix.org-1:F4OU4vw/lV2oiG6SBHZ+nqjl4EFJuqI4X9A7pvaBmhQ="
+          ];
+        };
         programs.direnv = {
           enable = true;
           nix-direnv = {
@@ -219,6 +226,33 @@
           HSA_OVERRIDE_GFX_VERSION = "11.5.1";
           HCC_AMDGPU_TARGET = "gfx1151";
         };
+      };
+  };
+
+  den.aspects.lemonade = {
+    nixos =
+      { ... }:
+      {
+        imports = [ inputs.nix-amd-ai.nixosModules.default ];
+
+        hardware.amd-npu = {
+          enable = true;
+          enableNPU = true;
+          enableFastFlowLM = false;
+          enableLemonade = true;
+          enableVulkan = true;
+          enableROCm = true;
+          enableImageGen = false;
+          lemonade = {
+            user = "mosqueteiro";
+            desktopApp.enable = false;
+          };
+        };
+
+        users.users.mosqueteiro.extraGroups = [
+          "video"
+          "render"
+        ];
       };
   };
 
