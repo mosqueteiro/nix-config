@@ -306,6 +306,7 @@
           pkgs.python314
           pkgs.nodejs_24
           pkgs.go
+          pkgs.gh
           pkgs.nil
           pkgs.nixd
           pkgs.wezterm
