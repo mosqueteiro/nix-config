@@ -316,6 +316,8 @@
           pkgs.signal-desktop
           pkgs.discord
           pkgs.devenv
+          pkgs.pandoc
+          pkgs.docling
         ];
 
         nixpkgs = {
