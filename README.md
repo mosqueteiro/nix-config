@@ -1,87 +1,42 @@
 # Nix Configuration
 
-This repo contains the source code for my Nix config including home-manager and NixOS for my framework desktop.
-
-It is modeled using the [den] framework and following the [From Zero to Den] guide.
-
-## Current setup
-
-### default.nix
-The [./default.nix] file is the entrypoint which connects everything together. It should almost never need to be edited.
-
-### npins/
-The npins tool is used for dependency pinning which controls the [./npins/] directory. To bootstrap this configuration, use `nix-shell -p npins` to be able to use npins before it's been added through this configuration. The following tools are added with `npins` to get den and the tools that integrate everything together.
-
-```shell
-npins init                                  # adds nixpkgs channel
-npins add github vic import-tree   -b main  # for auto-importing ./modules
-npins add github vic den           -b main  # Den itself, of course
-npins add github vic with-inputs   -b main  # flake-like inputs without Nix flakes.
-npins add github nix-community home-manager --branch master # OPTIONAL home integration
-npins add channel --name nixpkgs-stable nixos-25.11 # OPTIONAL stable package source
-```
-
-### modules/
-
-The modules directory holds all the configuration code for hosts and users.
-
-### den.nix
-
-The [./modules/den.nix] file configures most of the things.
+This repo contains the source code for my Nix config including home-manager and NixOS for a Framework Desktop. It uses the [den] framework (no-flake template).
 
 ## Quick Start
 
 ```shell
-# Evaluate the configuration (type check)
-nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
-
-# Build the system without switching
+# Build the system without switching (validates config)
 nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
 
 # Apply configuration to running system
 sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
 
-# Update dependencies (if needed)
+# Evaluate the configuration (type check)
+nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
+
+# Update all dependencies
 npins update
 ```
 
-## How It Works
+## Key Concepts
 
-den uses a **context-driven dispatch** system. Functions declare which context they need (host, user, or both) and only run when that context exists:
+- **[Architecture](ARCHITECTURE.md)** — directory structure, data flow, aspect inclusion DAG, hardware overview.
+- **[Den Framework Reference](docs/DEN-REFERENCE.md)** — no-flake pattern, aspect structure, context-driven dispatch, includes/provides, debugging.
+- **[Upgrade Guide](docs/UPGRADE.md)** — npins update workflow, state version bumps, rollback strategies.
+- **den** uses a **context-driven dispatch** system. Functions declare which context they need (host, user, or both) and only run when that context exists:
 
-```nix
-# Runs everywhere
-{ nixos.foo = 1; }
+  ```nix
+  # Runs everywhere
+  { nixos.foo = 1; }
+  # Runs only when {host} exists
+  ({ host, ... }: { nixos.networking.hostName = host.hostName; })
+  # Runs only when {host, user} exist
+  ({ host, user, ... }: { nixos.users.users.${user.userName}.extraGroups = [ "wheel" ]; })
+  ```
 
-# Runs only when {host} exists
-({ host, ... }: { nixos.networking.hostName = host.hostName; })
-
-# Runs only when {host, user} exist
-({ host, user, ... }: { nixos.users.users.${user.userName}.extraGroups = [ "wheel" ]; })
-```
-
-After running `npins update`, build and test with:
-
-```shell
-nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
-sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
-```
-
-### Home Manager version warning
-
-The current setup uses `nixpkgs-unstable` (26.11) while Home Manager 26.05 is pinned. This produces a non-blocking warning about mismatched versions. To silence it, add to your homeManager config:
-
-```nix
-home.enableNixpkgsReleaseCheck = false;
-```
-
-**Aspects** consolidate a single concern across Nix classes (NixOS, home-manager, darwin). This system is explained in the [Context System] documentation.
-
-### Selective Stable Packages
+## Selective Stable Packages
 
 This repo keeps `nixpkgs-unstable` as the main package source, and exposes `nixos-25.11` as `pkgs.stable` through `den.aspects.stable-nixpkgs` in `modules/den.nix`.
-
-Use this when you need a specific package from stable without downgrading the whole system:
 
 ```nix
 home.packages = [
@@ -89,13 +44,30 @@ home.packages = [
 ];
 ```
 
+### Home Manager version warning
+
+The current setup uses `nixpkgs-unstable` (26.11) while Home Manager may track a different release. To silence the non-blocking version mismatch warning:
+
+```nix
+home.enableNixpkgsReleaseCheck = false;
+```
+
+## Recreating from scratch
+
+```shell
+npins init                                  # adds nixpkgs channel
+npins add github vic import-tree   -b main  # auto-importing ./modules
+npins add github vic den           -b main  # den framework
+npins add github vic with-inputs   -b main  # flake-like inputs without flakes
+npins add github nix-community home-manager --branch master  # user-level config
+npins add channel --name nixpkgs-stable nixos-25.11  # stable package source
+npins add github NixOS nixos-hardware       # hardware modules
+npins add github noamsto nix-amd-ai         # AMD NPU support
+```
+
 ## Future changes
 
-- [ ] develop AI hosting aspect
-- slowly move things out of the **_nixos** files into respective aspects of the code
-- [x] add Framework specific firmware ([nixos-hardware-framework-desktop])
-- [x] add GPU support
-- [x] develop gaming aspect
+See [PLANS.md](PLANS.md) for the development roadmap and checklist.
 
 ## Resources
 

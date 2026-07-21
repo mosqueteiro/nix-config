@@ -2,11 +2,7 @@
 
 This is a NixOS/home-manager configuration repository using the [den](https://den.oeiuwq.com/) framework (no-flake template). It manages a Framework Desktop system with NixOS and Plasma6.
 
-See [From Zero to Den](https://den.oeiuwq.com/guides/from-zero-to-den/) and [No-Flake Template](https://den.oeiuwq.com/tutorials/noflake/) for the template this was built from.
-
 ## Build/Lint/Test Commands
-
-When the user asks to "build" or "test" the configuration, run:
 
 ```bash
 # Build the system without switching (validates config)
@@ -15,7 +11,7 @@ nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
 den-build
 ```
 
-After changes are validated, present this command to the user to apply (requires sudo - agent cannot run this):
+After changes are validated, present this command to the user to apply (requires sudo — agent cannot run sudo):
 
 ```bash
 # Apply configuration to running system
@@ -42,90 +38,18 @@ nix fmt                      # Format Nix code
 nix eval . --strict 2>&1 | grep -i error  # Check for errors
 ```
 
-## den Framework Concepts
-
-Read [Core Principles](https://den.oeiuwq.com/explanation/core-principles/) for background.
-
-### Aspects
-
-Aspects consolidate a single concern across Nix classes (nixos, homeManager, darwin):
-
-```nix
-den.aspects.myFeature = {
-  nixos = { pkgs, ... }: { /* NixOS config */ };
-  homeManager = { pkgs, ... }: { /* home-manager config */ };
-};
-```
-
-### Context-Driven Dispatch
-
-Functions declare which context they need - Den runs them only when that context exists:
-
-```nix
-# Runs everywhere
-{ nixos.foo = 1; }
-# Runs only when {host} exists
-({ host, ... }: { nixos.networking.hostName = host.hostName; })
-# Runs only when {host, user} exist
-({ host, user, ... }: { nixos.users.users.${user.userName}.extraGroups = [ "wheel" ]; })
-```
-
-See [Context System](https://den.oeiuwq.com/explanation/context-system/) for details.
-
-### Includes
-
-Aspects form a DAG through `includes`:
-
-```nix
-den.aspects.workstation = {
-  includes = [ den.aspects.dev-tools den.provides.primary-user ];
-  nixos.services.xserver.enable = true;
-};
-```
-
-### Provides
-
-Creates named sub-aspects: `den.aspects.tools.provides.editors`
-
-## This Repository's Structure
-
-### Key Files
+## Key Files
 
 | File | Purpose |
 |------|---------|
-| `default.nix` | Connects imports - import-tree and npins |
-| `modules/den.nix` | Main den configuration (hosts, users, aspects) |
-| `modules/_nixos/configuration.nix` | NixOS system config |
+| `default.nix` | Entry point — wires npins, with-inputs, import-tree |
+| `modules/den.nix` | Central configuration — hosts, users, all aspects |
+| `modules/_nixos/configuration.nix` | Legacy NixOS config (being migrated into aspects) |
 | `modules/_nixos/hardware-configuration.nix` | Hardware (auto-generated, do not edit) |
-| `npins/sources.json` | Pinned dependencies |
-
-### Host/User Declaration
-
-```nix
-den.hosts.x86_64-linux.frameworkDesktop.users = {
-  mosqueteiro = { };
-};
-```
-
-### Adding Packages
-
-**NixOS (system-wide):**
-```nix
-den.aspects.frameworkDesktop.nixos = { pkgs, ... }: {
-  environment.systemPackages = [ pkgs.vim ];
-};
-```
-
-**home-manager (per user):**
-```nix
-den.aspects.mosqueteiro.homeManager = { pkgs, ... }: {
-  home.packages = [ pkgs.vim ];
-};
-```
-
-### Adding Users
-
-See [Declare Hosts & Users](https://den.oeiuwq.com/guides/declare-hosts/) guide.
+| `npins/sources.json` | Pinned dependencies (do not edit manually) |
+| `ARCHITECTURE.md` | Repo structure, data flow, aspect inclusion DAG |
+| `docs/DEN-REFERENCE.md` | Den framework patterns cheatsheet |
+| `docs/UPGRADE.md` | Upgrade, rollback, and state version guide |
 
 ## Code Style
 
@@ -137,37 +61,35 @@ See [Declare Hosts & Users](https://den.oeiuwq.com/guides/declare-hosts/) guide.
 - **Options**: camelCase (`boot.loader.systemd-boot.enable`)
 - **Error Handling**: `lib.mkDefault`, `lib.mkForce`, `assert`, `throw`
 
-## Working with npins
+## Den Aspects (Quick Reference)
+
+Aspects consolidate config across NixOS and home-manager:
+
+```nix
+den.aspects.myFeature = {
+  nixos = { pkgs, ... }: { /* system config */ };
+  homeManager = { pkgs, ... }: { /* user config */ };
+};
+```
+
+See [`docs/DEN-REFERENCE.md`](docs/DEN-REFERENCE.md) for the full reference. Load the `den-aspects` skill when modifying aspects in `modules/den.nix`.
+
+## npins
 
 - Do NOT edit `npins/default.nix` or `npins/sources.json` manually
 - Use `npins add` and `npins update` to manage dependencies
-- When upgrading den itself (`den` pin), check the [den changelog](https://den.oeiuwq.com/releases/) for any breaking changes
+- See `docs/UPGRADE.md` for upgrade workflows; load the `npins-update` skill for detailed guidance
 
-## Debugging Strategies
+## Reference Docs
 
-REPL is interactive - use for user guidance. Agents should use:
-
-1. **Type checking**: `nix eval . --attr ...` catches type errors
-2. **Trace context**: Add `builtins.trace` to see available context:
-   ```nix
-   den.aspects.foo.includes = [ ({ host, ... }@ctx: builtins.trace ctx { nixos.foo = 1; }) ];
-   ```
-3. **Inspect config**: `nix eval . --attr nixosConfigurations.frameworkDesktop.config.networking.hostName`
-4. **Reference**: See [Debug Guide](https://den.oeiuwq.com/guides/debug/)
-
-## Relevant Documentation Links
-
-- [From Zero to Den](https://den.oeiuwq.com/guides/from-zero-to-den/)
-- [Configure Aspects](https://den.oeiuwq.com/guides/configure-aspects/)
-- [Declare Hosts & Users](https://den.oeiuwq.com/guides/declare-hosts/)
-- [den.schema Reference](https://den.oeiuwq.com/reference/schema/)
-- [den.aspects Reference](https://den.oeiuwq.com/reference/aspects/)
-- [Context System](https://den.oeiuwq.com/explanation/context-system/)
-- [Core Principles](https://den.oeiuwq.com/explanation/core-principles/)
+- [ARCHITECTURE.md](ARCHITECTURE.md) — repo structure & data flow
+- [docs/DEN-REFERENCE.md](docs/DEN-REFERENCE.md) — den framework patterns
+- [docs/UPGRADE.md](docs/UPGRADE.md) — upgrades & rollback
+- [modules/_nixos/README.md](modules/_nixos/README.md) — hardware specs & TPM enrollment
 
 ## Notes
 
-- State version: "25.11"
+- State version: `25.11`
 - System: btrfs with LUKS encryption
 - Desktop: Plasma6 with SDDM
 - Framework: uses den's `frameworkDesktop` aspect and `mosqueteiro` user aspect
