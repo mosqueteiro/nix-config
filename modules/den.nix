@@ -317,7 +317,7 @@
           pkgs.discord
           pkgs.devenv
           pkgs.pandoc
-          pkgs.docling
+          pkgs.poppler-utils
         ];
 
         nixpkgs = {
