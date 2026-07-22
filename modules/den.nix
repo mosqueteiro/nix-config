@@ -61,6 +61,8 @@
 
         services.fwupd.enable = true;
 
+        nix.settings.auto-optimise-store = true;
+
         environment.variables.EDITOR = "vim";
         environment.systemPackages = [
           pkgs.vim
