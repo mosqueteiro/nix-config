@@ -53,7 +53,12 @@
         boot.initrd.systemd = {
           enable = true;
           tpm2.enable = true;
+          fido2.enable = true;
         };
+
+        boot.initrd.luks.devices."luks-73982fd7-f423-475c-972e-83a2f8de521a".crypttabExtraOpts = [
+          "fido2-device=auto"
+        ];
 
         security.tpm2.enable = true;
 
