@@ -4,6 +4,11 @@
     "edit": {
       "npins/default.nix": "deny",
       "npins/sources.json": "deny"
+    },
+    "bash": {
+      "git status *": "allow",
+      "git diff *": "allow",
+      "nixos-rebuild build *": "allow"
     }
   }
 }
