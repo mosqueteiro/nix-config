@@ -231,7 +231,7 @@
       };
   };
 
-  den.aspects.lemonade = {
+  den.aspects.nix-amd-ai = {
     nixos =
       { ... }:
       {
@@ -240,21 +240,32 @@
         hardware.amd-npu = {
           enable = true;
           enableNPU = true;
-          enableFastFlowLM = false;
-          enableLemonade = true;
           enableVulkan = true;
           enableROCm = true;
-          enableImageGen = false;
-          lemonade = {
-            user = "mosqueteiro";
-            desktopApp.enable = false;
-          };
+          # enableFastFlowLM = false;
+          # enableImageGen = false;
         };
 
         users.users.mosqueteiro.extraGroups = [
           "video"
           "render"
         ];
+      };
+  };
+
+  den.aspects.lemonade = {
+    includes = [ den.aspects.nix-amd-ai ];
+
+    nixos =
+      { ... }:
+      {
+        hardware.amd-npu = {
+          enableLemonade = true;
+          lemonade = {
+            user = "mosqueteiro";
+            desktopApp.enable = false;
+          };
+        };
       };
   };
 
