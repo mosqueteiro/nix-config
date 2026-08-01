@@ -77,7 +77,7 @@ The following options must be present to enable the TPM 2.0 stack and systemd-ba
 
 ```nix
 boot.initrd.systemd.enable = true;
-boot.initrd.systemd.enableTpm2 = true;
+boot.initrd.systemd.tpm2.enable = true;
 security.tpm2.enable = true;
 ```
 
@@ -97,6 +97,63 @@ The TPM "seals" the encryption key against specific hardware states (PCRs). Upda
 
 > [!IMPORTANT]
 > Always keep your manual LUKS passphrase in a secure password manager. The TPM is a convenience layer, not a replacement for your master key.
+
+---
+
+## 🔑 FIDO2 YubiKey Unlock
+
+The system also supports unlocking LUKS with a FIDO2 YubiKey (PIN + touch) as a second unlock path alongside TPM2 and the passphrase.
+
+### NixOS Configuration
+
+Set in `den.aspects.frameworkDesktop.nixos` in `modules/den.nix`. The LUKS device path itself stays in the generated `hardware-configuration.nix`.
+
+```nix
+boot.initrd.systemd = {
+  enable = true;
+  tpm2.enable = true;
+  fido2.enable = true;
+};
+
+boot.initrd.luks.devices."luks-73982fd7-f423-475c-972e-83a2f8de521a".crypttabExtraOpts = [
+  "fido2-device=auto"
+];
+
+security.tpm2.enable = true;
+```
+
+### Enrollment
+
+With exactly one YubiKey (FIDO2 `hmac-secret`) connected, enroll a new FIDO2 keyslot. This **adds** a slot without removing the existing TPM2 or passphrase slots — do not pass `--wipe-slot`:
+
+```bash
+# Recommended: back up the LUKS header first to external storage
+sudo cryptsetup luksHeaderBackup /dev/nvme0n1p2 \
+  --header-backup-file /path/on/external-drive/luks-header.img
+
+sudo systemd-cryptenroll \
+  --fido2-device=auto \
+  --fido2-with-client-pin=yes \
+  --fido2-with-user-presence=yes \
+  /dev/nvme0n1p2
+```
+
+Verify the keyslot/token mapping:
+
+```bash
+sudo systemd-cryptenroll /dev/nvme0n1p2
+sudo cryptsetup luksDump /dev/nvme0n1p2
+```
+
+### Unlock Behavior
+
+- At boot, systemd may use TPM2, FIDO2, or fall back to the passphrase — whichever succeeds first.
+- When FIDO2 is used: enter the YubiKey PIN, then **touch the key**. There is no visible "touch your key" prompt; wait for the key's LED and touch it once.
+- To force a FIDO2-only test, temporarily set `boot.initrd.systemd.tpm2.enable = false`, run `nixos-rebuild boot`, reboot with the YubiKey, then restore the setting and `nixos-rebuild switch`.
+- TPM2 (sealed to PCRs 0+7) still invalidates only on BIOS/firmware or Secure Boot policy changes.
+
+> [!NOTE]
+> `ykfde` / `yubikey-full-disk-encryption` are not packaged in nixpkgs, and `boot.loader.systemd-boot.yubikeySupport` does not exist. Native `systemd-cryptenroll` FIDO2 is the supported approach.
 
 ---
 

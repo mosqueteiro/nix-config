@@ -10,7 +10,7 @@ This document describes the structure and design of this NixOS/home-manager conf
 | GPU | AMD Radeon 8060S (RDNA 3.5 / Strix Point / gfx1151) |
 | RAM | 128 GB |
 | Storage | Single NVMe, LUKS encrypted, btrfs (subvolumes: `@`, `@home`) |
-| Boot | UEFI, systemd-boot, TPM2 passwordless unlock |
+| Boot | UEFI, systemd-boot, TPM2 passwordless unlock + FIDO2 YubiKey |
 | Desktop | KDE Plasma 6 on Wayland (via SDDM) |
 | Sound | PipeWire (ALSA + PulseAudio compat) |
 | State Version | 25.11 |
