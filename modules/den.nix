@@ -18,6 +18,9 @@
   den.aspects.frameworkDesktop = {
     includes = [
       den.provides.hostname
+      den.aspects.locale-denver
+      den.aspects.allow-unfree
+      den.aspects.desktop-apps
       den.aspects.gaming
       den.aspects.ai
       den.aspects.lemonade
@@ -27,7 +30,7 @@
       { pkgs, ... }:
       {
         imports = [
-          ./_nixos/configuration.nix
+          ./hosts/framework-desktop/_hardware/hardware-configuration.nix
           inputs.nixos-hardware.nixosModules.framework-desktop-amd-ai-max-300-series
         ];
 
@@ -68,6 +71,13 @@
 
         nix.settings.auto-optimise-store = true;
 
+        # Enable networking
+        networking.networkmanager.enable = true;
+
+        # Configure network proxy if necessary
+        # networking.proxy.default = "http://user:password@proxy:port/";
+        # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
         environment.variables.EDITOR = "vim";
         environment.systemPackages = [
           pkgs.vim
@@ -84,7 +94,6 @@
           pkgs.unzip
           pkgs.wget
           pkgs.npins
-          pkgs.brave
           pkgs.btop-rocm
           pkgs.fastfetch
           pkgs.allium-tools
@@ -141,7 +150,46 @@
           };
         };
 
+      # This value determines the NixOS release from which the default
+      # settings for stateful data, like file locations and database versions
+      # on your system were taken. It‘s perfectly fine and recommended to leave
+      # this value at the release version of the first install of this system.
+      # Before changing this value read the documentation for this option
+      # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+      system.stateVersion = "25.11"; # Did you read the comment?
       };
+  };
+
+  den.aspects.allow-unfree = {
+    nixos = {...}: {
+      nixpkgs.config.allowUnfree = true;
+    };
+
+    homeManager = {...}: {
+      nixpkgs.config.allowUnfree = true;
+    };
+  };
+
+  den.aspects.locale-denver = {
+    nixos = {...}: {
+      # Set your time zone.
+      time.timeZone = "America/Denver";
+
+      # Select internationalisation properties.
+      i18n.defaultLocale = "en_US.UTF-8";
+
+      i18n.extraLocaleSettings = {
+        LC_ADDRESS = "en_US.UTF-8";
+        LC_IDENTIFICATION = "en_US.UTF-8";
+        LC_MEASUREMENT = "en_US.UTF-8";
+        LC_MONETARY = "en_US.UTF-8";
+        LC_NAME = "en_US.UTF-8";
+        LC_NUMERIC = "en_US.UTF-8";
+        LC_PAPER = "en_US.UTF-8";
+        LC_TELEPHONE = "en_US.UTF-8";
+        LC_TIME = "en_US.UTF-8";
+      };
+    };
   };
 
   den.aspects.stable-nixpkgs = {
@@ -309,8 +357,13 @@
       den.provides.define-user
       den.provides.primary-user
       (den.provides.user-shell "zsh")
+      den.aspects.allow-unfree
       den.aspects.stable-nixpkgs
     ];
+    user = {...}: {
+      description = "Mosqueteiro";
+    };
+
     homeManager =
       { pkgs, ... }:
       {
@@ -337,12 +390,6 @@
           pkgs.pandoc
           pkgs.poppler-utils
         ];
-
-        nixpkgs = {
-          config = {
-            allowUnfree = true;
-          };
-        };
 
         programs = {
           git = {
