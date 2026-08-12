@@ -76,7 +76,7 @@ den is a pinned dependency in `npins/sources.json`. Before updating:
    ```
 4. Build and evaluate:
    ```bash
-   nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
+   nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
    nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
    ```
 
@@ -88,37 +88,11 @@ den is a pinned dependency in `npins/sources.json`. Before updating:
 
 ---
 
-## State Version Bumps
+## State Version
 
-`system.stateVersion` and `home.stateVersion` control NixOS/home-manager defaults for stateful data. Bumping them enables new default behaviors but may require manual migration.
+`system.stateVersion` and `home.stateVersion` control NixOS/home-manager defaults for stateful data. Do not change these.
 
-### Current state version: 25.11
-
-### When to bump
-
-- You've done a full `nixos-rebuild switch` on the new release.
-- The release notes (in the NixOS manual) confirm the upgrade path.
-- You're ready to accept new default configurations for stateful services.
-
-### How to bump
-
-1. Update `nixpkgs` pin to track the new release:
-   ```bash
-   npins update nixpkgs
-   ```
-2. Update `nixpkgs-stable` if it follows the same track:
-   ```bash
-   npins update nixpkgs-stable
-   ```
-3. Update the state version in `modules/den.nix`:
-   ```nix
-   den.default.homeManager.home.stateVersion = "26.05"; # new version
-   ```
-4. Update `system.stateVersion` in `modules/_nixos/configuration.nix`:
-   ```nix
-   system.stateVersion = "26.05";
-   ```
-5. Build and switch.
+**Current state version:** 25.11
 
 > [!WARNING]
 > Once bumped, you cannot safely downgrade `stateVersion`. Stateful data (databases, file layouts, etc.) may assume the new format.

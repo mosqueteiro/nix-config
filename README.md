@@ -12,7 +12,7 @@ nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
 sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
 
 # Evaluate the configuration (type check)
-nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
+nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
 # Update all dependencies
 npins update

@@ -24,7 +24,7 @@ Other useful commands:
 
 ```bash
 # Evaluate the configuration (type check)
-nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
+nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
 # Update dependencies (npins)
 npins update
@@ -35,7 +35,7 @@ npins update
 ```bash
 nil check /path/to/file.nix  # Check a file with nil (Nix language server)
 nix fmt                      # Format Nix code
-nix eval . --strict 2>&1 | grep -i error  # Check for errors
+nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel  # Check for evaluation errors
 ```
 
 ## Key Files
@@ -43,9 +43,10 @@ nix eval . --strict 2>&1 | grep -i error  # Check for errors
 | File | Purpose |
 |------|---------|
 | `default.nix` | Entry point — wires npins, with-inputs, import-tree |
-| `modules/den.nix` | Central configuration — hosts, users, all aspects |
-| `modules/_nixos/configuration.nix` | Legacy NixOS config (being migrated into aspects) |
-| `modules/_nixos/hardware-configuration.nix` | Hardware (auto-generated, do not edit) |
+| `modules/den.nix` | Central configuration — hosts, users, and aspect definitions |
+| `modules/desktop/desktop.nix` | Desktop applications aspect |
+| `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix` | Hardware (auto-generated, do not edit) |
+| `modules/hosts/framework-desktop/README.md` | Framework Desktop hardware and TPM/FIDO2 documentation |
 | `npins/sources.json` | Pinned dependencies (do not edit manually) |
 | `ARCHITECTURE.md` | Repo structure, data flow, aspect inclusion DAG |
 | `docs/DEN-REFERENCE.md` | Den framework patterns cheatsheet |
@@ -72,7 +73,7 @@ den.aspects.myFeature = {
 };
 ```
 
-See [`docs/DEN-REFERENCE.md`](docs/DEN-REFERENCE.md) for the full reference. Load the `den-aspects` skill when modifying aspects in `modules/den.nix`.
+See [`docs/DEN-REFERENCE.md`](docs/DEN-REFERENCE.md) for the full reference. Load the `den-aspects` skill when modifying aspects in `modules/den.nix` or other aspect modules under `modules/`.
 
 ## npins
 
@@ -85,7 +86,7 @@ See [`docs/DEN-REFERENCE.md`](docs/DEN-REFERENCE.md) for the full reference. Loa
 - [ARCHITECTURE.md](ARCHITECTURE.md) — repo structure & data flow
 - [docs/DEN-REFERENCE.md](docs/DEN-REFERENCE.md) — den framework patterns
 - [docs/UPGRADE.md](docs/UPGRADE.md) — upgrades & rollback
-- [modules/_nixos/README.md](modules/_nixos/README.md) — hardware specs & TPM enrollment
+- [modules/hosts/framework-desktop/README.md](modules/hosts/framework-desktop/README.md) — hardware specs & TPM enrollment
 
 ## Notes
 

@@ -9,7 +9,7 @@ metadata:
 
 # Den Aspects
 
-`modules/den.nix` — writing aspects, adding packages, or debugging den config. For the full framework reference see [`docs/DEN-REFERENCE.md`](../../../docs/DEN-REFERENCE.md).
+`modules/den.nix` and modular files under `modules/` — writing aspects, adding packages, or debugging den config. For the full framework reference see [`docs/DEN-REFERENCE.md`](../../../docs/DEN-REFERENCE.md).
 
 ## Core Workflow
 
@@ -32,13 +32,13 @@ metadata:
 
 ```bash
 # Type-check a config option
-nix eval . --attr nixosConfigurations.frameworkDesktop.config.networking.hostName
+nix eval --file . nixosConfigurations.frameworkDesktop.config.networking.hostName
 
 # Full config output
-nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
+nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
 # Strict eval (catches errors)
-nix eval . --strict 2>&1 | grep -i error
+nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 ```
 
 To inspect what context variables are available, add a tracing include to the aspect:
@@ -51,7 +51,7 @@ den.aspects.foo.includes = [
 
 ## Safety Rails
 
-- **Don't edit** `modules/_nixos/hardware-configuration.nix` (auto-generated).
+- **Don't edit** `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix` (auto-generated).
 - **Don't edit** `npins/sources.json` or `npins/default.nix` manually.
 - **State version** is `25.11` — don't bump it casually (see `docs/UPGRADE.md`).
 - Aspects form a DAG via `includes` — no circular dependencies.

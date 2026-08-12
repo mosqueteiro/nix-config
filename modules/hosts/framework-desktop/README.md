@@ -57,7 +57,7 @@ sudo cryptsetup open /dev/disk/by-uuid/73982fd7-... luks-73982fd7-...
 sudo mount /dev/mapper/luks-73982fd7-... /mnt
 sudo btrfs subvolume create /mnt/@snapshots
 
-# Add to hardware-configuration.nix
+# Add to `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix`
 # fileSystems."/.snapshots" = {
 #   device = "/dev/mapper/luks-73982fd7-...";
 #   fsType = "btrfs";
@@ -106,7 +106,7 @@ The system also supports unlocking LUKS with a FIDO2 YubiKey (PIN + touch) as a 
 
 ### NixOS Configuration
 
-Set in `den.aspects.frameworkDesktop.nixos` in `modules/den.nix`. The LUKS device path itself stays in the generated `hardware-configuration.nix`.
+Set in `den.aspects.frameworkDesktop.nixos` in `modules/den.nix`. The LUKS device path itself stays in the generated `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix`.
 
 ```nix
 boot.initrd.systemd = {

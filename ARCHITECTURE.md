@@ -29,12 +29,15 @@ This document describes the structure and design of this NixOS/home-manager conf
 |-- nix-system.allium                   # Allium architectural spec (documentation)
 |-- LICENSE                             # Unlicense (public domain)
 |-- modules/
-|   |-- den.nix                         # Central config: hosts, users, aspects
+|   |-- den.nix                         # Central config: hosts, users, aspect definitions
 |   |-- starship.toml                   # Starship prompt theme
-|   |-- _nixos/
-|       |-- configuration.nix           # NixOS system config (legacy bucket)
-|       |-- hardware-configuration.nix  # Auto-generated hardware scan
-|       |-- README.md                   # TPM/LUKS enrollment docs
+|   |-- desktop/
+|   |   |-- desktop.nix                 # desktop-apps aspect
+|   |-- hosts/
+|       |-- framework-desktop/
+|           |-- README.md               # Machine-specific hardware and unlock docs
+|           |-- _hardware/
+|               |-- hardware-configuration.nix # Auto-generated hardware scan
 |-- npins/
 |   |-- default.nix                     # Fetcher library (auto-generated)
 |   |-- sources.json                    # Pinned dependency manifest
@@ -63,11 +66,13 @@ default.nix                # Entry point
   |
   v
 modules/                   # Auto-imported by import-tree
-  |-- den.nix              # The only module file
+  |-- den.nix              # Host/user declarations and aspect definitions
+  |-- desktop/desktop.nix  # Additional aspect definitions
+  |-- hosts/                # Host-specific documentation and modules
        |
-       |-- imports den.flakeModule
+       |-- den.nix imports den.flakeModule
        |-- declares: host = frameworkDesktop, user = mosqueteiro
-       |-- defines 6+ aspects (groups of config)
+       |-- defines and composes aspects
        |
        v
 den                         # Evaluates aspects contextually:
@@ -83,7 +88,7 @@ den                         # Evaluates aspects contextually:
 1. **Pinning**: `npins/sources.json` pins all external dependencies (nixpkgs, den, home-manager, etc.) with exact revisions and hashes.
 2. **Fetchers**: `npins/default.nix` converts `sources.json` into importable Nix expressions.
 3. **Input wiring**: `default.nix` uses the `with-inputs` tool to collect all npins sources into an `inputs` attrset (simulating flake inputs), then calls `evalModules` with `import-tree` to recursively import `modules/`.
-4. **Module evaluation**: `modules/den.nix` is the only module. It imports the den flake module, declares the host and user, and defines all aspects.
+4. **Module evaluation**: `import-tree` imports the normal `.nix` modules under `modules/`. These modules import the den flake module, declare the host and user, and define or extend aspects. Underscore-prefixed directories such as `_hardware` are kept for explicitly imported host modules.
 5. **Contextual dispatch**: den evaluates `nixos` attributes for the host context and `homeManager` attributes for the user context. Functions can conditionally apply config based on available context (e.g., `{ host, user, ... }`).
 6. **Output**: The final configuration is exposed as `config.flake`, consumed by `nixos-rebuild --file . -A nixosConfigurations.frameworkDesktop`.
 
@@ -136,9 +141,10 @@ den.aspects.workstation = {
 The main host aspect. Includes all other host aspects.
 
 **NixOS**:
-- **Imports** `modules/_nixos/configuration.nix` (legacy bucket) + `nixos-hardware.framework-desktop-amd-ai-max-300-series`
+- **Imports** `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix` + `nixos-hardware.framework-desktop-amd-ai-max-300-series`
 - **Display**: SDDM (Numlock on) → KDE Plasma 6
 - **Boot**: systemd-boot, TPM2, initrd systemd
+- **Networking**: NetworkManager
 - **Memory**: zramSwap
 - **Firmware**: fwupd
 - **Sound**: PipeWire (ALSA + PulseAudio compat)
@@ -146,10 +152,14 @@ The main host aspect. Includes all other host aspects.
 - **Direnv**: enabled with nix-direnv
 - **nix-ld**: enabled (dynamic binary compatibility)
 - **Nix**: flakes + nix-command, `nix-amd-ai.cachix.org` substituter
-- **System packages**: vim, neovim, git, gcc, gnumake, fd, sqlite, npins, ghostscript, tectonic, imagemagick, mermaid-cli, unzip, wget, fastfetch, brave, btop-rocm, allium-tools
+- **State version**: `25.11`
+- **System packages**: vim, neovim, git, gcc, gnumake, fd, sqlite, npins, ghostscript, tectonic, imagemagick, mermaid-cli, unzip, wget, fastfetch, btop-rocm, allium-tools
 
 **Includes**:
 - `den.provides.hostname` — built-in: sets hostname from host config
+- `den.aspects.locale-denver`
+- `den.aspects.allow-unfree`
+- `den.aspects.desktop-apps`
 - `den.aspects.gaming`
 - `den.aspects.ai`
 - `den.aspects.lemonade`
@@ -161,6 +171,28 @@ The main host aspect. Includes all other host aspects.
 
 - `programs.gamescope.enable = true`
 - `programs.steam.enable = true`
+
+---
+
+### `den.aspects.desktop-apps` (NixOS)
+
+Defined in `modules/desktop/desktop.nix`:
+
+- Firefox enabled through `programs.firefox`
+- Brave installed as a system package
+- Qalculate! Qt installed as a system package
+
+---
+
+### `den.aspects.allow-unfree` (NixOS + homeManager)
+
+Enables `nixpkgs.config.allowUnfree` for the package sets used by the host and user configurations.
+
+---
+
+### `den.aspects.locale-denver` (NixOS)
+
+Configures the `America/Denver` timezone and `en_US.UTF-8` locale settings.
 
 ---
 
@@ -200,6 +232,9 @@ Overlay providing `pkgs.allium-tools` (allium CLI from `juxt/allium-tools` v3.2.
 
 ### `den.aspects.mosqueteiro` (User-level)
 
+**User class**:
+- **User metadata**: description set to `Mosqueteiro`
+
 **homeManager**:
 - **Session**: `EDITOR=nvim`
 - **Shell**: zsh with vi mode, autosuggestions, syntax highlighting, starship prompt, fzf, zoxide
@@ -211,6 +246,7 @@ Overlay providing `pkgs.allium-tools` (allium CLI from `juxt/allium-tools` v3.2.
 - `den.provides.define-user` — built-in: creates user account
 - `den.provides.primary-user` — built-in: marks as primary user
 - `den.provides.user-shell "zsh"` — built-in: sets shell
+- `den.aspects.allow-unfree`
 - `den.aspects.stable-nixpkgs`
 
 ---
@@ -220,6 +256,9 @@ Overlay providing `pkgs.allium-tools` (allium CLI from `juxt/allium-tools` v3.2.
 ```
 frameworkDesktop
   |-- den.provides.hostname
+  |-- den.aspects.locale-denver
+  |-- den.aspects.allow-unfree
+  |-- den.aspects.desktop-apps
   |-- den.aspects.gaming
   |-- den.aspects.ai
   |-- den.aspects.lemonade
@@ -229,6 +268,7 @@ mosqueteiro
   |-- den.provides.define-user
   |-- den.provides.primary-user
   |-- den.provides.user-shell "zsh"
+  |-- den.aspects.allow-unfree
   |-- den.aspects.stable-nixpkgs
 ```
 
@@ -262,21 +302,18 @@ The three "follows" pins exist solely to resolve `nix-amd-ai`'s transitive depen
 | File | Purpose |
 |------|---------|
 | `default.nix` | Entry point — wires npins, with-inputs, import-tree |
-| `modules/den.nix` | Central configuration — hosts, users, all aspects |
-| `modules/_nixos/configuration.nix` | Legacy NixOS config (being migrated into aspects) |
-| `modules/_nixos/hardware-configuration.nix` | Auto-generated hardware scan (do not edit) |
+| `modules/den.nix` | Central configuration — hosts, users, and shared aspects |
+| `modules/desktop/desktop.nix` | Desktop applications aspect |
+| `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix` | Auto-generated hardware scan (do not edit) |
+| `modules/hosts/framework-desktop/README.md` | Framework Desktop hardware and unlock documentation |
 | `npins/sources.json` | Pinned dependency manifest (do not edit manually) |
 | `nix-system.allium` | Allium specification — domain-level architectural description |
 | `pkgs/allium-tools/default.nix` | Custom package definition |
 | `modules/starship.toml` | Starship prompt theme configuration |
 
-### `modules/_nixos/configuration.nix`
+### Host-specific hardware module
 
-A traditional NixOS configuration that serves as a **legacy bucket** — config that hasn't yet been migrated into aspects lives here. Currently contains:
-- Network manager
-- Firefox
-- Kate editor
-- User creation and group membership
+The generated hardware module lives at `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix` and is explicitly imported by `den.aspects.frameworkDesktop.nixos`. It contains filesystem, initrd, kernel-module, and platform-detection settings generated by `nixos-generate-config` and should not be edited manually.
 
 ---
 
@@ -290,7 +327,7 @@ nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
 sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
 
 # Evaluate config (type check)
-nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
+nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 ```
 
 Shell aliases (in zsh):
@@ -302,7 +339,7 @@ Shell aliases (in zsh):
 
 ## Debugging
 
-- **Type checking**: `nix eval . --attr nixosConfigurations.frameworkDesktop.config.networking.hostName`
+- **Type checking**: `nix eval --file . nixosConfigurations.frameworkDesktop.config.networking.hostName`
 - **Trace context**: Add `builtins.trace` to see available context variables
 - **REPL**: `nix repl` for interactive exploration
 - **Formating**: `nix fmt` for code formatting, `nil check` for linting

@@ -37,7 +37,6 @@ sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
 |--------|------|-------|
 | Update nixpkgs | Weekly (tracks unstable) | `npins update nixpkgs` → build → present switch for user |
 | Update den | Per release | Read [changelog](https://den.oeiuwq.com/releases/) first → `npins update den` → build → present switch for user |
-| Bump state version | After switching to a new NixOS release | Update `system.stateVersion` in `modules/_nixos/configuration.nix` AND `den.default.homeManager.home.stateVersion` in `modules/den.nix` |
 | Roll back a switch | Boot failure | Select previous generation from systemd-boot menu, or ask user to run `sudo nixos-rebuild switch --rollback` |
 
 ## Safety Rails

@@ -13,10 +13,10 @@ default.nix
   |-- calls evalModules with import-tree ./modules
   |
   v
-modules/den.nix              -> the only module (import-tree recursive)
-  |-- imports den.flakeModule
-  |-- declares host + user
-  |-- defines aspects
+modules/                    -> recursively imported modules
+  |-- den.nix               -> imports den.flakeModule, declares host + user
+  |-- desktop/*.nix         -> shared aspect definitions
+  |-- hosts/*/              -> host-specific documentation and modules
   |
   v
 .config.flake                -> consumed by nixos-rebuild --file . -A ...
@@ -214,13 +214,13 @@ den.default.homeManager.home.stateVersion = "25.11";
 
 ```bash
 # Type-check a specific option
-nix eval . --attr nixosConfigurations.frameworkDesktop.config.networking.hostName
+nix eval --file . nixosConfigurations.frameworkDesktop.config.networking.hostName
 
 # See full config (pipe to less)
-nix eval . --attr nixosConfigurations.frameworkDesktop.config.system.build.toplevel
+nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
 # Strict evaluation (catches errors)
-nix eval . --strict 2>&1 | grep -i error
+nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
 # Trace context variables in an aspect
 # Add to den.nix:
