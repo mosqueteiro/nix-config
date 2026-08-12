@@ -1,6 +1,12 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "permission": {
+    "read": {
+      "/nix/store/*": "allow",
+      "/nix/store/*-etc*": "ask",
+      "/nix/store/*system*": "ask",
+      "/nix/store/*.drv": "ask"
+    },
     "edit": {
       "npins/default.nix": "deny",
       "npins/sources.json": "deny"
@@ -8,6 +14,7 @@
     "bash": {
       "git status *": "allow",
       "git diff *": "allow",
+      "git log *": "allow",
       "nixos-rebuild build *": "allow"
     }
   }
