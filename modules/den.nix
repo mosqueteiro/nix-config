@@ -20,7 +20,8 @@
       den.provides.hostname
       den.aspects.locale-denver
       den.aspects.allow-unfree
-      den.aspects.desktop-apps
+      den.aspects.desktop
+      den.aspects.developer-tools
       den.aspects.gaming
       den.aspects.ai
       den.aspects.lemonade
@@ -78,53 +79,9 @@
         # networking.proxy.default = "http://user:password@proxy:port/";
         # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-        environment.variables.EDITOR = "vim";
         environment.systemPackages = [
-          pkgs.vim
-          pkgs.neovim
-          pkgs.fd
-          pkgs.git
-          pkgs.gcc
-          pkgs.gnumake
-          pkgs.ghostscript
-          pkgs.tectonic
-          pkgs.imagemagick
-          pkgs.mermaid-cli
-          pkgs.sqlite
-          pkgs.unzip
-          pkgs.wget
-          pkgs.npins
           pkgs.btop-rocm
-          pkgs.fastfetch
-          pkgs.allium-tools
         ];
-
-        # Set Brave as default browser
-        xdg.mime.defaultApplications = {
-          "text/html" = "brave-browser.desktop";
-          "x-scheme-handler/http" = "brave-browser.desktop";
-          "x-scheme-handler/https" = "brave-browser.desktop";
-        };
-
-        # Sound
-        ## Enable sound with pipewire.
-        services.pulseaudio.enable = false;
-        security.rtkit.enable = true;
-        services.pipewire = {
-          enable = true;
-          alsa.enable = true;
-          alsa.support32Bit = true;
-          pulse.enable = true;
-          # If you want to use JACK applications, uncomment this
-          #jack.enable = true;
-
-          # use the example session manager (no others are packaged yet so this is enabled by default,
-          # no need to redefine it in your config for now)
-          #media-session.enable = true;
-        };
-
-        # Bluetooth
-        hardware.bluetooth.enable = true;
 
         # Linker shim for precompiled binaries not built for NixOS
         programs.nix-ld = {
@@ -380,6 +337,7 @@
           pkgs.gh
           pkgs.nil
           pkgs.nixd
+          # pkgs.nixfmt
           pkgs.wezterm
           pkgs.opencode
           pkgs.bitwarden-desktop
