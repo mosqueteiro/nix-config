@@ -23,7 +23,8 @@
       den.aspects.desktop
       den.aspects.developer-tools
       den.aspects.gaming
-      den.aspects.ai
+      den.aspects.modular-ai
+      den.aspects.ollama
       den.aspects.lemonade
       den.aspects.local-pkgs
     ];
@@ -107,28 +108,28 @@
           };
         };
 
-      # This value determines the NixOS release from which the default
-      # settings for stateful data, like file locations and database versions
-      # on your system were taken. It‘s perfectly fine and recommended to leave
-      # this value at the release version of the first install of this system.
-      # Before changing this value read the documentation for this option
-      # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-      system.stateVersion = "25.11"; # Did you read the comment?
+        # This value determines the NixOS release from which the default
+        # settings for stateful data, like file locations and database versions
+        # on your system were taken. It‘s perfectly fine and recommended to leave
+        # this value at the release version of the first install of this system.
+        # Before changing this value read the documentation for this option
+        # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+        system.stateVersion = "25.11"; # Did you read the comment?
       };
   };
 
   den.aspects.allow-unfree = {
-    nixos = {...}: {
+    nixos = { ... }: {
       nixpkgs.config.allowUnfree = true;
     };
 
-    homeManager = {...}: {
+    homeManager = { ... }: {
       nixpkgs.config.allowUnfree = true;
     };
   };
 
   den.aspects.locale-denver = {
-    nixos = {...}: {
+    nixos = { ... }: {
       # Set your time zone.
       time.timeZone = "America/Denver";
 
@@ -175,40 +176,37 @@
       };
   };
 
-  den.aspects.ai = {
+  den.aspects.ollama = {
+    includes = [
+      den.aspects.strix-halo-gpu
+    ];
+    nixos = { pkgs, ... }: {
+      services.ollama = {
+        enable = true;
+        package = pkgs.ollama-rocm;
+        loadModels = [
+          "gemma4:e4b"
+          "gemma4:26b"
+          "gemma4:31b"
+          "qwen3-coder-next"
+        ];
+      };
+
+      services.open-webui.enable = true;
+    };
+  };
+
+  den.aspects.modular-ai = {
+    includes = [ den.aspects.strix-halo-gpu ];
     nixos =
       { pkgs, ... }:
       {
-        # 1. Base ROCm & Graphics Support
-        hardware.graphics = {
-          enable = true;
-          enable32Bit = true;
-          extraPackages = with pkgs; [
-            rocmPackages.clr.icd # Enables HIP/ROCm
-          ];
-        };
-        hardware.amdgpu.opencl.enable = true;
+        # System Packages
+        environment.systemPackages = with pkgs; [
+          pixi
+        ];
 
-        environment.variables = {
-          # Required overrides for Strix Point/Halo (gfx1151)
-          HSA_OVERRIDE_GFX_VERSION = "11.5.1";
-          HCC_AMDGPU_TARGET = "gfx1151";
-        };
-
-        # 2. Native NixOS AI Services (Ollama & WebUI)
-        services.ollama = {
-          enable = true;
-          package = pkgs.ollama-rocm;
-          loadModels = [
-            "gemma4:e4b"
-            "gemma4:26b"
-            "gemma4:31b"
-            "qwen3-coder-next"
-          ];
-        };
-        services.open-webui.enable = true;
-
-        # 3. Environment for Modular (MAX & Mojo) via Pixi
+        # Environment for Modular (MAX & Mojo) via Pixi
         programs.nix-ld = {
           enable = true;
           # Add standard libraries that pre-compiled conda/pixi binaries need
@@ -219,24 +217,6 @@
             rocmPackages.clr # Provides libamdhip64.so
             rocmPackages.clr.icd # OpenCL/HIP ICDs
           ];
-        };
-
-        # 4. System Packages
-        environment.systemPackages = with pkgs; [
-          # AI/ML Utilities
-          rocmPackages.rocminfo
-          rocmPackages.rocm-smi
-          pixi
-        ];
-      };
-
-    homeManager =
-      { ... }:
-      {
-        home.sessionVariables = {
-          # Required overrides for Strix Point/Halo (gfx1151)
-          HSA_OVERRIDE_GFX_VERSION = "11.5.1";
-          HCC_AMDGPU_TARGET = "gfx1151";
         };
       };
   };
@@ -317,7 +297,7 @@
       den.aspects.allow-unfree
       den.aspects.stable-nixpkgs
     ];
-    user = {...}: {
+    user = { ... }: {
       description = "Mosqueteiro";
     };
 
@@ -337,7 +317,7 @@
           pkgs.gh
           pkgs.nil
           pkgs.nixd
-          # pkgs.nixfmt
+          pkgs.nixfmt
           pkgs.wezterm
           pkgs.opencode
           pkgs.bitwarden-desktop

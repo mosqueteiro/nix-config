@@ -32,7 +32,7 @@ This document describes the structure and design of this NixOS/home-manager conf
 |   |-- den.nix                         # Central config: hosts, users, aspect definitions
 |   |-- starship.toml                   # Starship prompt theme
 |   |-- desktop/
-|   |   |-- desktop.nix                 # desktop-apps aspect
+|   |   |-- desktop.nix                 # Desktop, CLI, and developer-tool aspects
 |   |-- hosts/
 |       |-- framework-desktop/
 |           |-- README.md               # Machine-specific hardware and unlock docs
@@ -127,7 +127,7 @@ Aspects form a DAG through `includes`, enabling composition:
 
 ```nix
 den.aspects.workstation = {
-  includes = [ den.aspects.dev-tools den.provides.primary-user ];
+  includes = [ den.aspects.developer-tools den.provides.primary-user ];
   nixos = { ... };
 };
 ```
@@ -153,15 +153,17 @@ The main host aspect. Includes all other host aspects.
 - **nix-ld**: enabled (dynamic binary compatibility)
 - **Nix**: flakes + nix-command, `nix-amd-ai.cachix.org` substituter
 - **State version**: `25.11`
-- **System packages**: vim, neovim, git, gcc, gnumake, fd, sqlite, npins, ghostscript, tectonic, imagemagick, mermaid-cli, unzip, wget, fastfetch, btop-rocm, allium-tools
+- **System packages**: provided by the common CLI, desktop-apps, developer-tools, and GPU aspects; includes vim, neovim, git, gcc, gnumake, fd, sqlite, npins, nixfmt, ghostscript, tectonic, imagemagick, mermaid-cli, unzip, wget, fastfetch, btop-rocm, allium-tools, rocminfo, rocm-smi, pixi, Brave, and Qalculate! Qt
 
 **Includes**:
 - `den.provides.hostname` — built-in: sets hostname from host config
 - `den.aspects.locale-denver`
 - `den.aspects.allow-unfree`
-- `den.aspects.desktop-apps`
+- `den.aspects.desktop` — PipeWire, Bluetooth, common CLI tools, and desktop applications
+- `den.aspects.developer-tools` — development tools and local packages
 - `den.aspects.gaming`
-- `den.aspects.ai`
+- `den.aspects.modular-ai` — Modular MAX/Mojo tooling
+- `den.aspects.ollama` — Ollama and Open WebUI services
 - `den.aspects.lemonade`
 - `den.aspects.local-pkgs`
 
@@ -174,13 +176,40 @@ The main host aspect. Includes all other host aspects.
 
 ---
 
+### `den.aspects.desktop` (NixOS)
+
+Defined in `modules/desktop/desktop.nix`:
+
+- Includes `common-cli` and `desktop-apps`
+- Enables PipeWire with ALSA, 32-bit ALSA, and PulseAudio compatibility
+- Disables PulseAudio and enables realtime scheduling through `rtkit`
+- Enables Bluetooth
+
 ### `den.aspects.desktop-apps` (NixOS)
 
 Defined in `modules/desktop/desktop.nix`:
 
+- Includes `den.aspects.allow-unfree` for Brave
 - Firefox enabled through `programs.firefox`
-- Brave installed as a system package
+- Brave installed as a system package and set as the default browser
 - Qalculate! Qt installed as a system package
+
+---
+
+### `den.aspects.developer-tools` (NixOS)
+
+Defined in `modules/desktop/desktop.nix`:
+
+- Includes `common-cli` and `local-pkgs`
+- Installs Neovim, Git, GCC, GNU Make, Ghostscript, Tectonic, ImageMagick, Mermaid CLI, and SQLite
+- Installs the local `allium-tools` package
+
+### `den.aspects.common-cli` (NixOS)
+
+Defined in `modules/desktop/desktop.nix`:
+
+- Sets the system editor to `vim`
+- Installs common CLI tools: fd, fastfetch, vim, unzip, wget, nixfmt, and npins
 
 ---
 
@@ -196,16 +225,42 @@ Configures the `America/Denver` timezone and `en_US.UTF-8` locale settings.
 
 ---
 
-### `den.aspects.ai` (NixOS + homeManager)
+### `den.aspects.amd-gpu` (NixOS)
 
-**NixOS**:
-- **GPU/ROCm**: graphics enabled, AMDGPU OpenCL, ROCm ICD
-- **Environment overrides**: `HSA_OVERRIDE_GFX_VERSION="11.5.1"`, `HCC_AMDGPU_TARGET="gfx1151"` (Strix Point)
-- **Services**: ollama (with ollama-rocm, models: gemma4, qwen3-coder-next), open-webui
-- **nix-ld extended**: ROCm runtime libraries
-- **Packages**: rocminfo, rocm-smi, pixi
+Defined in `modules/amd-gpu.nix`:
 
-**homeManager**: Session environment variables for GPU.
+- Enables graphics support with 32-bit compatibility
+- Enables AMDGPU OpenCL and the ROCm ICD
+- Installs `rocminfo` and `rocm-smi`
+
+### `den.aspects.strix-halo-gpu` (NixOS + homeManager)
+
+Defined in `modules/amd-gpu.nix`:
+
+- Includes `den.aspects.amd-gpu`
+- Sets `HSA_OVERRIDE_GFX_VERSION="11.5.1"` and `HCC_AMDGPU_TARGET="gfx1151"` for Strix Point/Halo GPUs
+- Exposes the same overrides through the home-manager session environment
+
+### `den.aspects.modular-ai` (NixOS)
+
+**Includes**: `den.aspects.strix-halo-gpu`
+
+- Installs `pixi` for Modular MAX and Mojo tooling
+- Extends `nix-ld` with the C compiler, zlib, ROCm runtime, HIP, and OpenCL libraries required by precompiled Pixi environments
+
+### `den.aspects.ollama` (NixOS)
+
+**Includes**: `den.aspects.strix-halo-gpu`
+
+- Enables Ollama with the `ollama-rocm` package
+- Loads `gemma4:e4b`, `gemma4:26b`, `gemma4:31b`, and `qwen3-coder-next`
+- Enables Open WebUI
+
+### `den.aspects.nix-amd-ai` (NixOS)
+
+- Imports the `nix-amd-ai` NixOS module
+- Enables the AMD NPU, Vulkan, and ROCm support
+- Adds the primary user to the `video` and `render` groups
 
 ---
 
@@ -258,10 +313,22 @@ frameworkDesktop
   |-- den.provides.hostname
   |-- den.aspects.locale-denver
   |-- den.aspects.allow-unfree
-  |-- den.aspects.desktop-apps
+  |-- den.aspects.desktop
+  |   |-- den.aspects.common-cli
+  |   |-- den.aspects.desktop-apps
+  |       |-- den.aspects.allow-unfree
+  |-- den.aspects.developer-tools
+  |   |-- den.aspects.common-cli
+  |   |-- den.aspects.local-pkgs
   |-- den.aspects.gaming
-  |-- den.aspects.ai
+  |-- den.aspects.modular-ai
+  |   |-- den.aspects.strix-halo-gpu
+  |       |-- den.aspects.amd-gpu
+  |-- den.aspects.ollama
+  |   |-- den.aspects.strix-halo-gpu
+  |       |-- den.aspects.amd-gpu
   |-- den.aspects.lemonade
+  |   |-- den.aspects.nix-amd-ai
   |-- den.aspects.local-pkgs
 
 mosqueteiro
@@ -303,7 +370,8 @@ The three "follows" pins exist solely to resolve `nix-amd-ai`'s transitive depen
 |------|---------|
 | `default.nix` | Entry point — wires npins, with-inputs, import-tree |
 | `modules/den.nix` | Central configuration — hosts, users, and shared aspects |
-| `modules/desktop/desktop.nix` | Desktop applications aspect |
+| `modules/desktop/desktop.nix` | Desktop, CLI, and developer-tool aspects |
+| `modules/amd-gpu.nix` | Generic AMD GPU and Strix Halo GPU aspects |
 | `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix` | Auto-generated hardware scan (do not edit) |
 | `modules/hosts/framework-desktop/README.md` | Framework Desktop hardware and unlock documentation |
 | `npins/sources.json` | Pinned dependency manifest (do not edit manually) |
@@ -342,6 +410,6 @@ Shell aliases (in zsh):
 - **Type checking**: `nix eval --file . nixosConfigurations.frameworkDesktop.config.networking.hostName`
 - **Trace context**: Add `builtins.trace` to see available context variables
 - **REPL**: `nix repl` for interactive exploration
-- **Formating**: `nix fmt` for code formatting, `nil check` for linting
+- **Formatting**: `nix fmt` for code formatting, `nil diagnostics` for linting
 
 See the [den debug guide](https://den.oeiuwq.com/guides/debug/) for more.

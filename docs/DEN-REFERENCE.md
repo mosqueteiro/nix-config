@@ -120,8 +120,11 @@ Aspects declare dependencies via `includes`, forming a DAG:
 den.aspects.frameworkDesktop = {
   includes = [
     den.provides.hostname        # built-in: sets hostname
+    den.aspects.desktop
+    den.aspects.developer-tools
     den.aspects.gaming           # another aspect
-    den.aspects.ai
+    den.aspects.modular-ai
+    den.aspects.ollama
     den.aspects.lemonade
     den.aspects.local-pkgs
   ];

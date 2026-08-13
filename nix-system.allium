@@ -61,7 +61,7 @@ rule BootstrapFrameworkDesktop {
     ensures: HostConfig.created(
         name: "frameworkDesktop",
         system: "x86_64-linux",
-        aspects: { "locale-denver", "allow-unfree", "desktop-apps", "gaming", "ai", "lemonade", "local-pkgs" }
+        aspects: { "locale-denver", "allow-unfree", "desktop", "developer-tools", "gaming", "modular-ai", "ollama", "lemonade", "local-pkgs" }
     )
     ensures: UserConfig.created(
         name: "mosqueteiro",

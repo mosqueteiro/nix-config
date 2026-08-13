@@ -4,7 +4,7 @@
       den.aspects.common-cli
       den.aspects.desktop-apps
     ];
-    nixos = {...}: {
+    nixos = { ... }: {
       # Sound
       ## Enable sound with pipewire.
       services.pulseaudio.enable = false;
@@ -29,12 +29,12 @@
   };
 
   den.aspects.desktop-apps = {
-    nixos = { pkgs, ...}: {
-      # Install firefox.
+    includes = [ den.aspects.allow-unfree ];
+    nixos = { pkgs, ... }: {
       programs.firefox.enable = true;
 
       environment.systemPackages = [
-        pkgs.brave
+        pkgs.brave # unfree
         pkgs.qalculate-qt
       ];
 
@@ -51,6 +51,7 @@
   den.aspects.developer-tools = {
     includes = [
       den.aspects.common-cli
+      den.aspects.local-pkgs
     ];
     nixos = { pkgs, ... }: {
       environment.systemPackages = [
@@ -69,7 +70,7 @@
   };
 
   den.aspects.common-cli = {
-    nixos = { pkgs, ...}: {
+    nixos = { pkgs, ... }: {
       environment.variables.EDITOR = "vim";
       environment.systemPackages = [
         pkgs.fd
