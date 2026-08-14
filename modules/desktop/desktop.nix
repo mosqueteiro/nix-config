@@ -69,6 +69,15 @@
     };
   };
 
+  den.aspects.virtualisation = {
+    nixos = {...}: {
+      virtualisation.podman = {
+        enable = true;
+        defaultNetwork.settings.dns_enabled = true;
+      };
+    };
+  };
+
   den.aspects.common-cli = {
     nixos = { pkgs, ... }: {
       environment.variables.EDITOR = "vim";

@@ -27,6 +27,7 @@
       den.aspects.ollama
       den.aspects.lemonade
       den.aspects.local-pkgs
+      den.aspects.virtualisation
     ];
     nixos =
       { pkgs, ... }:
