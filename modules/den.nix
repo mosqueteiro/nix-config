@@ -328,6 +328,7 @@
           pkgs.devenv
           pkgs.pandoc
           pkgs.poppler-utils
+          pkgs.qpdf
         ];
 
         programs = {
