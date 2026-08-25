@@ -64,6 +64,7 @@
         pkgs.imagemagick
         pkgs.mermaid-cli
         pkgs.sqlite
+        pkgs.tlrc
         pkgs.allium-tools
       ];
     };
