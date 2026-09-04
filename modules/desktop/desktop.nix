@@ -87,6 +87,7 @@
       environment.systemPackages = [
         pkgs.fd
         pkgs.fastfetch
+        pkgs.jq
         pkgs.vim
         pkgs.unzip
         pkgs.wget
