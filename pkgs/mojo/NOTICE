@@ -1,0 +1,14 @@
+Mojo source-build package
+
+The Nix packaging recipe and Nix build patch in this directory are based on
+the Mojo source-build work by Niclas Overby:
+
+https://github.com/overby-me/overby-me/tree/main/platform/nix/packages/mojo
+
+They have been copied and modified for this repository. The copied and
+modified recipe files are licensed under the GNU Affero General Public
+License, version 3 only. See ./LICENSE.
+
+The Modular source fetched by the recipe is a separate work licensed under the
+Apache License 2.0 with LLVM Exceptions. Its license and third-party notices
+are supplied by the Modular source distribution.

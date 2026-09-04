@@ -276,6 +276,7 @@
         nixpkgs.overlays = [
           (final: prev: {
             allium-tools = final.callPackage ../pkgs/allium-tools { };
+            mojo = final.callPackage ../pkgs/mojo { };
           })
         ];
       };
@@ -285,6 +286,7 @@
         nixpkgs.overlays = [
           (final: prev: {
             allium-tools = final.callPackage ../pkgs/allium-tools { };
+            mojo = final.callPackage ../pkgs/mojo { };
           })
         ];
       };
@@ -296,6 +298,7 @@
       den.provides.primary-user
       (den.provides.user-shell "zsh")
       den.aspects.allow-unfree
+      den.aspects.local-pkgs
       den.aspects.stable-nixpkgs
     ];
     user = { ... }: {
@@ -313,6 +316,7 @@
           pkgs.ripgrep
           pkgs.nerd-fonts.daddy-time-mono
           pkgs.python314
+          pkgs.mojo
           pkgs.nodejs_24
           pkgs.go
           pkgs.gh

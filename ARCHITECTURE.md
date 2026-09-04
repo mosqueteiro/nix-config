@@ -44,6 +44,12 @@ This document describes the structure and design of this NixOS/home-manager conf
 |-- pkgs/
 |   |-- allium-tools/
 |       |-- default.nix                 # Custom package: allium CLI
+|   |-- mojo/
+|       |-- default.nix                 # Source-built Mojo compiler and tools
+|       |-- nix-build.patch             # WebAssembly changes to Modular sources
+|       |-- README.md                   # Mojo package build and upgrade guide
+|       |-- NOTICE                      # Attribution and license scope
+|       |-- LICENSE                     # AGPLv3 license for the copied recipe
 ```
 
 ---
@@ -281,7 +287,8 @@ Provides `pkgs.stable` overlay using the pinned `nixpkgs-stable` (nixos-25.11) c
 
 ### `den.aspects.local-pkgs` (NixOS + homeManager)
 
-Overlay providing `pkgs.allium-tools` (allium CLI from `juxt/allium-tools` v3.2.3).
+Overlay providing `pkgs.allium-tools` (allium CLI from `juxt/allium-tools` v3.2.3)
+and `pkgs.mojo` (the source-built Mojo compiler based on overby-me's recipe).
 
 ---
 
@@ -295,7 +302,7 @@ Overlay providing `pkgs.allium-tools` (allium CLI from `juxt/allium-tools` v3.2.
 - **Shell**: zsh with vi mode, autosuggestions, syntax highlighting, starship prompt, fzf, zoxide
 - **Git**: user name/email configured
 - **Nixpkgs**: `allowUnfree = true`
-- **User packages**: brave, vim, neovim (stable), nil, nixd, python314, nodejs_24, go, ripgrep, gh, tree, devenv, pandoc, poppler-utils, nerd-fonts.daddy-time-mono, wezterm, opencode, bitwarden-desktop, signal-desktop, discord
+- **User packages**: brave, vim, neovim (stable), nil, nixd, python314, mojo, nodejs_24, go, ripgrep, gh, tree, devenv, pandoc, poppler-utils, nerd-fonts.daddy-time-mono, wezterm, opencode, bitwarden-desktop, signal-desktop, discord
 
 **Includes**:
 - `den.provides.define-user` — built-in: creates user account
@@ -377,6 +384,7 @@ The three "follows" pins exist solely to resolve `nix-amd-ai`'s transitive depen
 | `npins/sources.json` | Pinned dependency manifest (do not edit manually) |
 | `nix-system.allium` | Allium specification — domain-level architectural description |
 | `pkgs/allium-tools/default.nix` | Custom package definition |
+| `pkgs/mojo/default.nix` | Source-built Mojo package definition |
 | `modules/starship.toml` | Starship prompt theme configuration |
 
 ### Host-specific hardware module
