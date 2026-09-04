@@ -1,7 +1,7 @@
 # Mojo
 
-This directory contains a Nix package for the Mojo compiler and developer
-tools, built from the open-source Modular repository with Bazel.
+This directory contains the source-build implementation for the Mojo compiler
+and developer tools, built from the open-source Modular repository with Bazel.
 
 The package is based on Niclas Overby's source-build implementation:
 
@@ -29,7 +29,7 @@ The derivation is intentionally split into three stages:
 1. `deps` is a fixed-output derivation that downloads Bazel repositories and
    preserves the module lockfile and repository cache.
 2. `build` performs the multi-hour LLVM and Mojo compilation and exports raw
-   compiler artifacts. It is exposed through `pkgs.mojo.build` for inspection.
+   compiler artifacts. It is exposed through `pkgs.mojo-source.build` for inspection.
 3. The final `mojo` derivation performs packaging, ELF fixing, wrappers,
    configuration, and smoke tests.
 
@@ -43,8 +43,10 @@ Build the configured system with:
 nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
 ```
 
-The package is exposed through the `local-pkgs` overlay and installed in the
-`mosqueteiro` home-manager profile.
+The source build is exposed as `pkgs.mojo-source` through the `local-pkgs`
+overlay. The default system `pkgs.mojo` package is the separate stable
+GPU/MAX SDK from [`pkgs/mojo-max`](../mojo-max), installed by the
+`developer-tools` aspect.
 
 ## `nix-build.patch`
 
@@ -66,9 +68,10 @@ tools, LSP server, LLDB integration, REPL entry point, formatter, and Jupyter
 kernel files.
 
 This source build does not provide the full MAX/GPU SDK. In particular, it does
-not package `max-core`, MAX Mojo libraries, or GPU target implementations. Use
-the existing Pixi-based Modular tooling for MAX/GPU work until a separate
-version-matched binary SDK package is added.
+not package `max-core`, MAX Mojo libraries, or GPU target implementations. The
+official stable binary SDK in this directory's `mojo-max` implementation is
+exposed as `pkgs.mojo` when GPU/MAX support is required. The existing Pixi-based
+Modular tooling remains available for the full MAX platform.
 
 ## Upgrade
 

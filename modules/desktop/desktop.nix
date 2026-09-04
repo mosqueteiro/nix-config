@@ -52,6 +52,7 @@
     includes = [
       den.aspects.common-cli
       den.aspects.local-pkgs
+      den.aspects.allow-unfree
     ];
     nixos = { pkgs, ... }: {
       environment.systemPackages = [
@@ -66,12 +67,13 @@
         pkgs.sqlite
         pkgs.tlrc
         pkgs.allium-tools
+        pkgs.mojo
       ];
     };
   };
 
   den.aspects.virtualisation = {
-    nixos = {...}: {
+    nixos = { ... }: {
       virtualisation.podman = {
         enable = true;
         defaultNetwork.settings.dns_enabled = true;

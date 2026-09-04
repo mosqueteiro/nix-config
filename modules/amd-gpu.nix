@@ -6,6 +6,10 @@
         enable = true;
         enable32Bit = true;
         extraPackages = with pkgs; [
+          # Expose the HSA runtime through /run/opengl-driver/lib for
+          # Nix-linked GPU consumers such as the global Mojo SDK.
+          rocmPackages.rocm-runtime
+          rocmPackages.clr
           rocmPackages.clr.icd # Enables HIP/ROCm
         ];
       };

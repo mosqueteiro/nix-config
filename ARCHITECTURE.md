@@ -50,6 +50,10 @@ This document describes the structure and design of this NixOS/home-manager conf
 |       |-- README.md                   # Mojo package build and upgrade guide
 |       |-- NOTICE                      # Attribution and license scope
 |       |-- LICENSE                     # AGPLv3 license for the copied recipe
+|   |-- mojo-max/
+|       |-- default.nix                 # Official stable GPU/MAX SDK package
+|       |-- sources.json                 # Pinned Modular wheel sources and hashes
+|       |-- README.md                   # GPU/MAX package and upgrade guide
 ```
 
 ---
@@ -207,7 +211,7 @@ Defined in `modules/desktop/desktop.nix`:
 Defined in `modules/desktop/desktop.nix`:
 
 - Includes `common-cli` and `local-pkgs`
-- Installs Neovim, Git, GCC, GNU Make, Ghostscript, Tectonic, ImageMagick, Mermaid CLI, and SQLite
+- Installs Neovim, Git, GCC, GNU Make, Ghostscript, Tectonic, ImageMagick, Mermaid CLI, SQLite, and Mojo
 - Installs the local `allium-tools` package
 
 ### `den.aspects.common-cli` (NixOS)
@@ -287,8 +291,9 @@ Provides `pkgs.stable` overlay using the pinned `nixpkgs-stable` (nixos-25.11) c
 
 ### `den.aspects.local-pkgs` (NixOS + homeManager)
 
-Overlay providing `pkgs.allium-tools` (allium CLI from `juxt/allium-tools` v3.2.3)
-and `pkgs.mojo` (the source-built Mojo compiler based on overby-me's recipe).
+Overlay providing `pkgs.allium-tools` (allium CLI from `juxt/allium-tools` v3.2.3),
+`pkgs.mojo` (the official stable GPU/MAX SDK), and `pkgs.mojo-source` (the
+source-built Mojo compiler based on overby-me's recipe).
 
 ---
 
@@ -302,7 +307,7 @@ and `pkgs.mojo` (the source-built Mojo compiler based on overby-me's recipe).
 - **Shell**: zsh with vi mode, autosuggestions, syntax highlighting, starship prompt, fzf, zoxide
 - **Git**: user name/email configured
 - **Nixpkgs**: `allowUnfree = true`
-- **User packages**: brave, vim, neovim (stable), nil, nixd, python314, mojo, nodejs_24, go, ripgrep, gh, tree, devenv, pandoc, poppler-utils, nerd-fonts.daddy-time-mono, wezterm, opencode, bitwarden-desktop, signal-desktop, discord
+- **User packages**: brave, vim, neovim (stable), nil, nixd, python314, nodejs_24, go, ripgrep, gh, tree, devenv, pandoc, poppler-utils, nerd-fonts.daddy-time-mono, wezterm, opencode, bitwarden-desktop, signal-desktop, discord
 
 **Includes**:
 - `den.provides.define-user` — built-in: creates user account
@@ -385,6 +390,7 @@ The three "follows" pins exist solely to resolve `nix-amd-ai`'s transitive depen
 | `nix-system.allium` | Allium specification — domain-level architectural description |
 | `pkgs/allium-tools/default.nix` | Custom package definition |
 | `pkgs/mojo/default.nix` | Source-built Mojo package definition |
+| `pkgs/mojo-max/default.nix` | Official stable GPU/MAX SDK package definition |
 | `modules/starship.toml` | Starship prompt theme configuration |
 
 ### Host-specific hardware module

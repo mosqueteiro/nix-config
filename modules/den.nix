@@ -276,7 +276,9 @@
         nixpkgs.overlays = [
           (final: prev: {
             allium-tools = final.callPackage ../pkgs/allium-tools { };
-            mojo = final.callPackage ../pkgs/mojo { };
+            # Official stable SDK with MAX/GPU support; see mojo-source below.
+            mojo = final.callPackage ../pkgs/mojo-max { };
+            mojo-source = final.callPackage ../pkgs/mojo { };
           })
         ];
       };
@@ -286,7 +288,9 @@
         nixpkgs.overlays = [
           (final: prev: {
             allium-tools = final.callPackage ../pkgs/allium-tools { };
-            mojo = final.callPackage ../pkgs/mojo { };
+            # Official stable SDK with MAX/GPU support; see mojo-source below.
+            mojo = final.callPackage ../pkgs/mojo-max { };
+            mojo-source = final.callPackage ../pkgs/mojo { };
           })
         ];
       };
@@ -316,7 +320,6 @@
           pkgs.ripgrep
           pkgs.nerd-fonts.daddy-time-mono
           pkgs.python314
-          pkgs.mojo
           pkgs.nodejs_24
           pkgs.go
           pkgs.gh
