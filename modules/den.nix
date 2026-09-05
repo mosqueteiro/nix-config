@@ -24,7 +24,6 @@
       den.aspects.developer-tools
       den.aspects.gaming
       den.aspects.modular-ai
-      den.aspects.ollama
       den.aspects.lemonade
       den.aspects.local-pkgs
       den.aspects.virtualisation
@@ -187,9 +186,6 @@
         package = pkgs.ollama-rocm;
         loadModels = [
           "gemma4:e4b"
-          "gemma4:26b"
-          "gemma4:31b"
-          "qwen3-coder-next"
         ];
       };
 
