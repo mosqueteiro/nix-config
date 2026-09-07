@@ -65,6 +65,11 @@
           "fido2-device=auto"
         ];
 
+        boot.kernelParams = [
+          "ttm.pages_limit=27648000"
+          "ttm.pages_pool_size=27648000"
+        ];
+
         security.tpm2.enable = true;
 
         zramSwap.enable = true;
