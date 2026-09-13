@@ -65,11 +65,6 @@
           "fido2-device=auto"
         ];
 
-        boot.kernelParams = [
-          "ttm.pages_limit=27648000"
-          "ttm.pages_pool_size=27648000"
-        ];
-
         security.tpm2.enable = true;
 
         zramSwap.enable = true;
@@ -236,6 +231,11 @@
           enableROCm = true;
           # enableFastFlowLM = false;
           # enableImageGen = false;
+
+          gpuMemory = {
+              ttmSizeGiB = 96;        # GTT pool ceiling  → ttm pages_limit
+              pagePoolSizeGiB = 96;   # pre-cached pool   → ttm page_pool_size
+          };
         };
 
         users.users.mosqueteiro.extraGroups = [
