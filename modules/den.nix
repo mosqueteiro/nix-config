@@ -233,8 +233,8 @@
           # enableImageGen = false;
 
           gpuMemory = {
-              ttmSizeGiB = 96;        # GTT pool ceiling  → ttm pages_limit
-              pagePoolSizeGiB = 96;   # pre-cached pool   → ttm page_pool_size
+              ttmSizeGiB = 120;        # GTT pool ceiling  → ttm pages_limit
+              pagePoolSizeGiB = 120;   # pre-cached pool   → ttm page_pool_size
           };
         };
 
