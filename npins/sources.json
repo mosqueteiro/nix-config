@@ -61,9 +61,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "d6b26648de54f890bb0041ed1f3f8fd33ffbbd2a",
-      "url": "https://github.com/noamsto/nix-amd-ai/archive/d6b26648de54f890bb0041ed1f3f8fd33ffbbd2a.tar.gz",
-      "hash": "sha256-/LYKTdilTPp8VP24Dvpkf7SxliGM2Ra1UmFVzlI+BFk="
+      "revision": "2b53592eaf897da5c5e4af43fb7739f17437191d",
+      "url": "https://github.com/noamsto/nix-amd-ai/archive/2b53592eaf897da5c5e4af43fb7739f17437191d.tar.gz",
+      "hash": "sha256-XcFsdlp+TovuOIMV+XnYLGabyv+Ln71XllERcdR7CKE="
     },
     "nix-amd-ai-flake-parts": {
       "type": "Git",
@@ -121,8 +121,8 @@
       "type": "Channel",
       "name": "nixpkgs-unstable",
       "artifact": "nixexprs.tar.xz",
-      "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1044894.59ea0b1c043c/nixexprs.tar.xz",
-      "hash": "sha256-II2tuu61ElXqjvw0FyZPlwzFrz6zWLczg8xljsZyQRg="
+      "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1092129.319e4cebef10/nixexprs.tar.xz",
+      "hash": "sha256-UwKRZKua8BOagYl0cou05BHtu7F6XV62FD2Hb+f0QYs="
     },
     "nixpkgs-stable": {
       "type": "Channel",
