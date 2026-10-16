@@ -80,6 +80,12 @@
         # networking.proxy.default = "http://user:password@proxy:port/";
         # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
+        programs.nh = {
+          enable = true;
+          clean.enable = true;
+          clean.extraArgs = "--keep-since 14d --keep 7";
+        };
+
         environment.systemPackages = [
           pkgs.btop-rocm
         ];
