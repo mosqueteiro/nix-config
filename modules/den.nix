@@ -309,6 +309,7 @@
       den.provides.primary-user
       (den.provides.user-shell "zsh")
       den.aspects.allow-unfree
+      den.aspects.wezterm
       den.aspects.local-pkgs
       den.aspects.stable-nixpkgs
     ];
@@ -333,7 +334,6 @@
           pkgs.nil
           pkgs.nixd
           pkgs.nixfmt
-          pkgs.wezterm
           pkgs.opencode
           pkgs.bitwarden-desktop
           pkgs.tree
