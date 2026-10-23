@@ -2,6 +2,43 @@
 
 How to keep this NixOS configuration up-to-date and handle version transitions.
 
+<!--toc:start-->
+- [Upgrade Guide](#upgrade-guide)
+  - [Updating Pinned Dependencies (npins)](#updating-pinned-dependencies-npins)
+    - [Update all pins](#update-all-pins)
+    - [Update a specific pin](#update-a-specific-pin)
+    - [Add a new pin](#add-a-new-pin)
+    - [Check what changed](#check-what-changed)
+  - [Update Cadence](#update-cadence)
+    - [General strategy](#general-strategy)
+  - [Pin Version Tracking](#pin-version-tracking)
+    - [nixpkgs (nixpkgs-unstable)](#nixpkgs-nixpkgs-unstable)
+      - [Latest investigation](#latest-investigation)
+    - [nixpkgs-stable (nixos-25.11)](#nixpkgs-stable-nixos-2511)
+      - [Latest investigation](#latest-investigation-1)
+    - [den](#den)
+      - [Latest investigation](#latest-investigation-2)
+    - [den helper pins (flake-aspects, import-tree, with-inputs)](#den-helper-pins-flake-aspects-import-tree-with-inputs)
+      - [Latest investigation](#latest-investigation-3)
+    - [home-manager](#home-manager)
+      - [Latest investigation](#latest-investigation-4)
+    - [nixos-hardware](#nixos-hardware)
+      - [Latest investigation](#latest-investigation-5)
+    - [nix-amd-ai](#nix-amd-ai)
+      - [Latest investigation](#latest-investigation-6)
+  - [Upgrading den](#upgrading-den)
+    - [Common den migration concerns](#common-den-migration-concerns)
+  - [State Version](#state-version)
+  - [Rolling Back](#rolling-back)
+    - [Roll back a single switch](#roll-back-a-single-switch)
+    - [Roll back to a specific generation](#roll-back-to-a-specific-generation)
+    - [Roll back after a failed build](#roll-back-after-a-failed-build)
+    - [Roll back npins pins](#roll-back-npins-pins)
+  - [Post-Update Checklist](#post-update-checklist)
+  - [Major Version Upgrades](#major-version-upgrades)
+    - [This repo tracks unstable](#this-repo-tracks-unstable)
+<!--toc:end-->
+
 ---
 
 ## Updating Pinned Dependencies (npins)
@@ -64,6 +101,102 @@ git diff npins/sources.json
 
 ---
 
+## Pin Version Tracking
+
+Snapshot of each npin plus the latest update investigation for each. Before running `npins update <pin>`, check that pin's **Latest investigation** below — or run a fresh one and record the results here.
+
+Per-pin dates:
+
+- **Created** — when the pin was added to `npins/sources.json` (from this repo's git history).
+- **Updated** — date of the pinned upstream commit (git pins) or channel snapshot (channel pins), i.e. how fresh the pin is.
+
+**How to investigate an update** (without changing the pin):
+
+1. Look up the pin's latest upstream state:
+   - Channel pins: [Repology](https://repology.org/) or [nixpkgs-multiverse](https://nixmultiverse.com/) for per-package version history across nixpkgs revisions.
+   - Git pins: the repo's branch HEAD / release notes / changelog.
+2. Compare against the versions at the current pin (listed per pin below).
+3. **Overwrite** the pin's **Latest investigation** block with the new findings: keep the original created date, set the updated date to today, and record what versions an update would bring for the packages we use plus any caveats.
+
+### nixpkgs (nixpkgs-unstable)
+
+- **Created:** 2026-03-29 · **Updated:** 2026-10-14
+- **Current pin:** `nixpkgs-26.11pre1092129.319e4cebef10`
+- **Tracked packages:** opencode, ollama-rocm, brave, signal-desktop, discord, bitwarden-desktop, python314, nodejs_24, go, devenv, pixi, plasma6, wezterm, steam
+
+#### Latest investigation
+
+- **Created:** 2026-10-23 · **Updated:** 2026-10-23
+- Current pin ships opencode **1.19.0** (updated the week of 2026-10-16).
+- nixpkgs-unstable now ships **2.0.32** (landed ~2026-10-20, rev `02c087f3fe67`).
+- `nixos-25.11` still has 1.1.14 — the 2.x line has not been backported to stable.
+- Caveats: v2 is packaged from the platform-specific Bun executables on npm (`binaryNativeCode`, not built from source); open upstream issue about the v2 TUI under nix ([anomalyco/opencode#37646](https://github.com/anomalyco/opencode/issues/37646)).
+- **Conclusion:** `npins update nixpkgs` would bring opencode 1.19.0 → 2.0.32. Smoke-test the TUI after switching.
+
+### nixpkgs-stable (nixos-25.11)
+
+- **Created:** 2026-04-12 · **Updated:** 2026-05-26
+- **Current pin:** `nixos-25.11.11422.25f538306313`
+- **Tracked packages:** neovim (via `pkgs.stable.neovim` in `modules/den.nix`)
+
+#### Latest investigation
+
+_(none yet)_
+
+### den
+
+- **Created:** 2026-03-29 · **Updated:** 2026-05-27
+- **Current pin:** `vic/den` @ `fba6781` (main)
+- **Tracked:** framework itself — see [den changelog](https://den.oeiuwq.com/releases/) before updating.
+
+#### Latest investigation
+
+_(none yet)_
+
+### den helper pins (flake-aspects, import-tree, with-inputs)
+
+- **Created:** 2026-03-29 (all three)
+- **Current pins:**
+  - `vic/flake-aspects` @ `56fa8d4` (main) — updated 2026-03-15
+  - `vic/import-tree` @ `d321337` (main) — updated 2026-05-14
+  - `vic/with-inputs` @ `e8729bd` (main) — updated 2026-05-04
+- Update together with `den` — these are part of the same framework family and may need matching revisions.
+
+#### Latest investigation
+
+_(none yet)_
+
+### home-manager
+
+- **Created:** 2026-03-29 · **Updated:** 2026-07-31
+- **Current pin:** `nix-community/home-manager` @ `bf9ce9f` (master)
+
+#### Latest investigation
+
+_(none yet)_
+
+### nixos-hardware
+
+- **Created:** 2026-03-30 · **Updated:** 2026-05-26
+- **Current pin:** `NixOS/nixos-hardware` @ `ef4efb8` (master)
+
+#### Latest investigation
+
+_(none yet)_
+
+### nix-amd-ai
+
+- **Created:** 2026-06-20 · **Updated:** 2026-10-12
+- **Current pin:** `noamsto/nix-amd-ai` @ `2b53592` (main)
+- **Helper pins** (locked by the same flake, created 2026-06-20): `flake-parts` @ `f7c1a2d` (updated 2026-05-13), `nix-darwin` @ `a1fa429` (updated 2026-06-18), `nixpkgs.lib` @ `de42d44` (updated 2026-06-14)
+- **Tracked:** NPU/ROCm driver stack for the Framework's AMD AI accelerator.
+
+#### Latest investigation
+
+_(none yet)_
+
+---
+
 ## Upgrading den
 
 den is a pinned dependency in `npins/sources.json`. Before updating:
@@ -90,7 +223,7 @@ den is a pinned dependency in `npins/sources.json`. Before updating:
 
 ## State Version
 
-`system.stateVersion` and `home.stateVersion` control NixOS/home-manager defaults for stateful data. Do not change these.
+`system.stateVersion` and `home.stateVersion` control NixOS/home-manager defaults for stateful data. They are set once when the system is created and must **never** be changed — not on upgrades, not on channel switches, not ever. Bumping it does not upgrade existing state; it only changes defaults for *newly created* state, which can silently break services.
 
 **Current state version:** 25.11
 
@@ -156,11 +289,13 @@ When NixOS releases a new stable branch (e.g., 25.11 → 26.05):
 
 1. **Update nixpkgs pin** to the new release channel.
 2. **Update nixpkgs-stable** to the new release.
-3. **Bump stateVersion** after the switch is confirmed working.
-4. **Check the NixOS release manual** for breaking changes.
-5. **Check home-manager release notes** for breaking changes.
-6. **Check den changelog** for any framework changes needed.
+3. **Check the NixOS release manual** for breaking changes.
+4. **Check home-manager release notes** for breaking changes.
+5. **Check den changelog** for any framework changes needed.
+
+> [!WARNING]
+> Do **not** bump `stateVersion` as part of an upgrade. It is set once at install time and must stay there — see [State Version](#state-version).
 
 ### This repo tracks unstable
 
-This repo primarily uses `nixpkgs-unstable` (currently nixpkgs-26.11pre), so there is no "release upgrade" — updates are continuous. However, `stateVersion` should still be bumped when the corresponding stable release is cut, as home-manager defaults follow the state version.
+This repo primarily uses `nixpkgs-unstable` (currently nixpkgs-26.11pre), so there is no "release upgrade" — updates are continuous. `stateVersion` stays at its install-time value regardless.

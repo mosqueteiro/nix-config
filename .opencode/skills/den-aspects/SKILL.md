@@ -53,7 +53,7 @@ den.aspects.foo.includes = [
 
 - **Don't edit** `modules/hosts/framework-desktop/_hardware/hardware-configuration.nix` (auto-generated).
 - **Don't edit** `npins/sources.json` or `npins/default.nix` manually.
-- **State version** is `25.11` — don't bump it casually (see `docs/UPGRADE.md`).
+- **State version** is `25.11` — set once at install time, **never** bump it (see `docs/UPGRADE.md`).
 - Aspects form a DAG via `includes` — no circular dependencies.
 - Use `lib.mkDefault` / `lib.mkForce` for option priorities, not direct assignment.
 

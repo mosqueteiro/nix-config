@@ -374,6 +374,8 @@ All external dependencies are pinned via `npins/sources.json`:
 
 The three "follows" pins exist solely to resolve `nix-amd-ai`'s transitive dependencies to single pinned versions.
 
+To update these pins, see [`docs/UPGRADE.md`](docs/UPGRADE.md) — including **Pin Version Tracking**, which records each pin's current snapshot and the latest investigation of what an update would bring.
+
 ---
 
 ## Key Files

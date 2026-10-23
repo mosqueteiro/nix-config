@@ -26,7 +26,7 @@ Other useful commands:
 # Evaluate the configuration (type check)
 nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
-# Update dependencies (npins)
+# Update dependencies (npins) — load the npins-update skill; check Pin Version Tracking in docs/UPGRADE.md first
 npins update
 ```
 
@@ -79,6 +79,8 @@ See [`docs/DEN-REFERENCE.md`](docs/DEN-REFERENCE.md) for the full reference. Loa
 
 - Do NOT edit `npins/default.nix` or `npins/sources.json` manually
 - Use `npins add` and `npins update` to manage dependencies
+- Prefer single-pin updates (`npins update den`) over batch `npins update`
+- Before updating a pin, check its **Pin Version Tracking** entry in `docs/UPGRADE.md` (current snapshot + latest investigation of what the update would bring)
 - See `docs/UPGRADE.md` for upgrade workflows; load the `npins-update` skill for detailed guidance
 
 ## Reference Docs

@@ -14,7 +14,7 @@ sudo nixos-rebuild switch --file . -A nixosConfigurations.frameworkDesktop
 # Evaluate the configuration (type check)
 nix eval --file . nixosConfigurations.frameworkDesktop.config.system.build.toplevel
 
-# Update all dependencies
+# Update all dependencies (check Pin Version Tracking in docs/UPGRADE.md first)
 npins update
 ```
 
@@ -22,7 +22,7 @@ npins update
 
 - **[Architecture](ARCHITECTURE.md)** — directory structure, data flow, aspect inclusion DAG, hardware overview.
 - **[Den Framework Reference](docs/DEN-REFERENCE.md)** — no-flake pattern, aspect structure, context-driven dispatch, includes/provides, debugging.
-- **[Upgrade Guide](docs/UPGRADE.md)** — npins update workflow, state version bumps, rollback strategies.
+- **[Upgrade Guide](docs/UPGRADE.md)** — npins update workflow, pin version tracking, rollback strategies.
 - **den** uses a **context-driven dispatch** system. Functions declare which context they need (host, user, or both) and only run when that context exists:
 
   ```nix
