@@ -21,6 +21,7 @@
       den.aspects.locale-denver
       den.aspects.allow-unfree
       den.aspects.desktop
+      den.aspects.plasma6-desktop
       den.aspects.developer-tools
       den.aspects.gaming
       den.aspects.modular-ai
@@ -35,22 +36,6 @@
           ./hosts/framework-desktop/_hardware/hardware-configuration.nix
           inputs.nixos-hardware.nixosModules.framework-desktop-amd-ai-max-300-series
         ];
-
-        # X11 & Desktop
-        services.xserver.enable = true;
-        services.xserver.xkb = {
-          layout = "us";
-          variant = "";
-        };
-
-        services.displayManager.sddm.enable = true;
-        services.displayManager.sddm.settings = {
-          General = {
-            Numlock = "on";
-          };
-        };
-
-        services.desktopManager.plasma6.enable = true;
 
         # Bootloader.
         boot.loader.systemd-boot.enable = true;
