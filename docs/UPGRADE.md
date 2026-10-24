@@ -238,8 +238,8 @@ Per-pin dates:
 
 ### nix-amd-ai
 
-- **Created:** 2026-06-20 · **Updated:** 2026-10-12
-- **Current pin:** `noamsto/nix-amd-ai` @ `2b53592` (main, 2026-10-12)
+- **Created:** 2026-06-20 · **Updated:** 2026-10-23
+- **Current pin:** `noamsto/nix-amd-ai` @ `5b82496` (main, 2026-10-23)
 - **Upstream:** HEAD `5b82496` (2026-10-23), **4 commits ahead** of our pin.
 - **Helper pins** (locked by the same flake, created 2026-06-20): `flake-parts` @ `f7c1a2d` (22 behind, HEAD 2026-10-01, flake-lock updates only), `nix-darwin` @ `a1fa429` (35 behind, HEAD 2026-10-23, mostly CI/darwin-etc fixes), `nixpkgs.lib` @ `de42d44` (391 behind, HEAD 2026-10-18, lib-level maintenance)
 - **Tracked:** NPU/ROCm driver stack for the Framework's AMD AI accelerator.
@@ -251,6 +251,7 @@ Per-pin dates:
 - Checked the `modules/amd-npu.nix` option surface at pin vs HEAD: **no options added or removed** — our `hardware.amd-npu` settings (enable/enableNPU/enableVulkan/enableROCm/gpuMemory/enableLemonade/lemonade.*) remain valid.
 - The cachix binary cache (`nix-amd-ai.cachix.org`, already configured) may serve the new Lemonade build.
 - **Conclusion:** low-risk update; only visible effect is a Lemonade upgrade (plus possible rebuild time if not cache-hit). Helper pins are internal to its flake eval and safe to refresh alongside.
+- **Update outcome (2026-10-23):** pin moved `2b53592` → `5b82496` (the investigated HEAD). Note: the final commit (#317) bumped FastFlowLM further, to **1.0.10** (beyond the 1.0.9 in the earlier bump commit). Build passed: FastFlowLM 1.0.10 and Lemonade **2026.43.3** source-built locally (only lemonade's npm-deps prefetch was cache-hit on cachix); `lemond.service` unit regenerated. New FastFlowLM ships a much larger NPU2 xclbin set (Qwen3.5/3.6/3.8 families).
 
 ---
 
