@@ -158,8 +158,8 @@ Per-pin dates:
 
 ### nixpkgs-stable (nixos-25.11)
 
-- **Created:** 2026-04-12 · **Updated:** 2026-05-26
-- **Current pin:** `nixos-25.11.11422.25f538306313`
+- **Created:** 2026-04-12 · **Updated:** 2026-10-23
+- **Current pin:** `nixos-25.11.12484.b6018f87da91`
 - **Latest channel snapshot:** `nixos-25.11.12484.b6018f87da91` (branch HEAD `b6018f87`, snapshot 12484)
 - **Tracked packages:** neovim (via `pkgs.stable.neovim` in `modules/den.nix`)
 
@@ -170,6 +170,7 @@ Per-pin dates:
 - Security commits in the range (250+, API-capped; 2026-05-26 → 2026-06-30), checked 2026-10-23: `filebrowser` 2.63.5→2.63.14 (CVE backport; not installed), `nixos/mysql` insecure-default-auth fix + `initialScript` follow-up (we don't run MySQL), `incus` 7.2 backports (we use podman). **Zero commits touch neovim paths**, and stable is only consumed via `pkgs.stable.neovim`, so none of these reach the system.
 - Incidental: the `nixos-25.11` branch shows no commits since 2026-06-30 — quiet/winding down.
 - **Conclusion:** a stable-pin refresh buys us nothing right now — security-fix-only and in packages/modules we don't use. Deprioritize until 25.11 gets a neovim bump (or a fix inside neovim's closure).
+- **Update outcome (2026-10-23):** pin moved `11422.25f538306313` → `12484.b6018f87da91` (the exact snapshot investigated). Build passed; as expected neovim derivations were identical (`0.11.7`) so everything came from the binary cache — no rebuilds, only a few closure paths fetched.
 
 ### den
 
