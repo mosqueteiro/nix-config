@@ -41,6 +41,8 @@ git diff npins/sources.json   # confirm only the intended pin changed
 nixos-rebuild build --file . -A nixosConfigurations.frameworkDesktop
 ```
 
+**Run the build in the background** (the shell tool's background option, i.e. `nohup`-style execution). Builds can run far longer than the foreground timeout — e.g. the 2026-10-23 nixpkgs update took ~20 min (ollama-rocm/llama.cpp dominated), and nix-amd-ai updates source-build FastFlowLM/Lemonade. Backgrounding keeps the session responsive and the output still streams to a log you can read while waiting. If nothing else depends on the build, end your turn — you'll be resumed when it finishes; don't poll.
+
 If the build fails, roll back the pin (`git checkout HEAD~1 npins/sources.json` — or the pre-update commit) and record the failure in the investigation block.
 
 ### Step 4 — Present the switch command to the user
