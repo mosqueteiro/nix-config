@@ -224,8 +224,8 @@ Per-pin dates:
 
 ### nixos-hardware
 
-- **Created:** 2026-03-30 · **Updated:** 2026-05-26
-- **Current pin:** `NixOS/nixos-hardware` @ `ef4efb8` (master, 2026-05-26)
+- **Created:** 2026-03-30 · **Updated:** 2026-10-22
+- **Current pin:** `NixOS/nixos-hardware` @ `1b418b8` (master, 2026-10-22)
 - **Upstream:** HEAD `1b418b8` (2026-10-22), **131 commits ahead** of our pin.
 
 #### Latest investigation
@@ -234,6 +234,7 @@ Per-pin dates:
 - Our module (`framework/desktop/amd-ai-max-300-series`) is **byte-identical** between pin and HEAD (verified by diffing the raw file).
 - Framework-related changes upstream since the pin touch only the 13"/16" laptops (audio device priority fix, 16" libinput quirk removal) — not the Desktop. New additive option family `hardware.amdgpu.dcDebugMask` in `common/gpu/amd` is available if we ever need GPU debug masks.
 - **Conclusion:** zero-risk update (our module unchanged). Can be updated anytime.
+- **Update outcome (2026-10-23):** pin moved `ef4efb8` → `1b418b8` (the investigated HEAD). Build passed with a **byte-identical toplevel** — same store path as the previous build, i.e. no change to the system closure, as predicted.
 
 ### nix-amd-ai
 
