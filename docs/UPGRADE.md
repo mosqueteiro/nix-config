@@ -120,18 +120,41 @@ Per-pin dates:
 
 ### nixpkgs (nixpkgs-unstable)
 
-- **Created:** 2026-03-29 · **Updated:** 2026-10-14
+- **Created:** 2026-03-29 · **Updated:** 2026-10-23
 - **Current pin:** `nixpkgs-26.11pre1092129.319e4cebef10`
 - **Tracked packages:** opencode, ollama-rocm, brave, signal-desktop, discord, bitwarden-desktop, python314, nodejs_24, go, devenv, pixi, plasma6, wezterm, steam
 
 #### Latest investigation
 
 - **Created:** 2026-10-23 · **Updated:** 2026-10-23
-- Current pin ships opencode **1.19.0** (updated the week of 2026-10-16).
-- nixpkgs-unstable now ships **2.0.32** (landed ~2026-10-20, rev `02c087f3fe67`).
-- `nixos-25.11` still has 1.1.14 — the 2.x line has not been backported to stable.
-- Caveats: v2 is packaged from the platform-specific Bun executables on npm (`binaryNativeCode`, not built from source); open upstream issue about the v2 TUI under nix ([anomalyco/opencode#37646](https://github.com/anomalyco/opencode/issues/37646)).
-- **Conclusion:** `npins update nixpkgs` would bring opencode 1.19.0 → 2.0.32. Smoke-test the TUI after switching.
+- Current pin `319e4cebef10` (2026-10-14) vs unstable HEAD `5adc508` (2026-10-20). Package versions verified by evaluating both revisions (`nix eval` on the pinned source and on the HEAD tarball), not via Repology snapshots:
+
+| Package (used in config) | Current pin | Unstable HEAD | Notes |
+|---|---|---|---|
+| opencode | 1.19.0 | 2.0.32 | Major v2 line; packaged from Bun binaries (`binaryNativeCode`); upstream is already at 2.1.x — unstable lags. Smoke-test the TUI post-switch ([anomalyco/opencode#37646](https://github.com/anomalyco/opencode/issues/37646)) |
+| plasma6 (`kdePackages.kwin`) | 6.7.5 | 6.8.0 | New Plasma minor release; biggest system-level change in this update |
+| python314 | 3.14.7 | 3.14.8 | Patch bump |
+| ollama-rocm | 0.40.3 | 0.40.4 | Patch bump; ROCm build may trigger rebuild |
+| brave | 1.97.56 | 1.97.59 | Patch bump |
+| signal-desktop | 8.29.0 | 8.31.0 | Upstream is at 8.32.0; unstable slightly behind |
+| pixi | 0.81.0 | 0.82.0 | Minor bump |
+| go | 1.26.8 | 1.26.9 | Patch bump |
+| wezterm | 0-unstable-2026-09-29 | 0-unstable-2026-10-10 | Git snapshot bump |
+| discord | 1.0.161 | 1.0.161 | Unchanged |
+| bitwarden-desktop | 2026.9.1 | 2026.9.1 | Unchanged |
+| nodejs_24 | 24.21.0 | 24.21.0 | Unchanged |
+| steam | 1.0.0.87 | 1.0.0.87 | Unchanged |
+| devenv | 2.4.0 | 2.4.0 | Unchanged |
+
+- **Conclusion:** low-risk update — mostly patch bumps; the two things worth attention are Plasma 6.7.5 → 6.8.0 (desktop session behavior) and opencode 1.19 → 2.0 (major version, smoke-test TUI). No other tracked package changes major version.
+- **opencode v2 migration specifics (checked against local config 2026-10-23):**
+  - V1 `opencode.jsonc` keeps working — V2 normalizes V1 fields in memory (no rewrite). The `~/.config/opencode/opencode.jsonc` `permission`/`provider`/`plugin`/`variants` shapes are all still read.
+  - No `tui.json` locally, so the `cli.json` client-config migration is a no-op.
+  - `permission.bash` → action renamed `shell`; `permission.read` on `*.env*` carries over via normalization; `external_directory` is now allowed by default in V2.
+  - `lsp` is accepted but **not run** in V2 — ours is `{}`, harmless.
+  - Gemini auth plugin: `opencode-gemini-auth` **has a V2 entrypoint** (v2.0.1, targets OpenCode 2.0.14) but requires re-caching: `rm -rf ~/.cache/opencode/node_modules/opencode-gemini-auth` then run `opencode`. Note `/gquota` command and quota tool are V1-only.
+  - Todos are off by default in V2 (`experimental.todo: true` to restore).
+- **Update outcome (2026-10-23):** pin moved to `nixpkgs-26.11pre1097770.5adc50831c25` (the same HEAD investigated above). Build passed (~20 min, ollama-rocm/llama.cpp dominated the rebuild). Switch applied successfully; user reports two benign `evaluation warning: stdenv.isLinux/isDarwin is deprecated` lines — traced to the home-manager pin (`bf9ce9fe`, still uses the deprecated accessors), not to this repo; will vanish on the next home-manager update. opencode plugin `opencode-gemini-auth` was removed from the user's config before switching.
 
 ### nixpkgs-stable (nixos-25.11)
 
