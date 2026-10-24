@@ -253,6 +253,7 @@ Per-pin dates:
 - **Conclusion:** low-risk update; only visible effect is a Lemonade upgrade (plus possible rebuild time if not cache-hit). Helper pins are internal to its flake eval and safe to refresh alongside.
 - **Update outcome (2026-10-23):** pin moved `2b53592` → `5b82496` (the investigated HEAD). Note: the final commit (#317) bumped FastFlowLM further, to **1.0.10** (beyond the 1.0.9 in the earlier bump commit). Build passed: FastFlowLM 1.0.10 and Lemonade **2026.43.3** source-built locally (only lemonade's npm-deps prefetch was cache-hit on cachix); `lemond.service` unit regenerated. New FastFlowLM ships a much larger NPU2 xclbin set (Qwen3.5/3.6/3.8 families).
 - **Helper-pin outcome (2026-10-23):** `flake-parts` `f7c1a2d`→`024633c`, `nix-darwin` `a1fa429`→`bb0b90d`, `nixpkgs.lib` `de42d44`→`d0f5962` (all the investigated HEADs). Build passed with a **byte-identical toplevel** — no closure change, as these only feed the flake eval.
+- **Post-switch (2026-10-23):** `lemond.service` active and serving on `localhost:13305` with Lemonade 2026.43.3. The `lws_socket_bind: setsockopt bind to device 127.0.0.1 error (19)` log line is benign libwebsockets noise (host misparsed as a bind-device name); both IPv4/IPv6 HTTP listeners bind right after.
 
 ---
 
