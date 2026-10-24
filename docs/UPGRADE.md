@@ -167,7 +167,9 @@ Per-pin dates:
 
 - **Created:** 2026-10-23 · **Updated:** 2026-10-23
 - Verified by extracting `pkgs/by-name/ne/neovim-unwrapped/package.nix` from both channel tarballs: neovim is **0.11.7 at both the pinned snapshot and the latest snapshot** (`nixos-25.11.12484.b6018f87da91`). The only tracked package sees no version change.
-- **Conclusion:** a stable-pin refresh is a security-fix-only no-op for this config. Lowest priority; do it whenever convenient (e.g. ride along with an unstable update).
+- Security commits in the range (250+, API-capped; 2026-05-26 → 2026-06-30), checked 2026-10-23: `filebrowser` 2.63.5→2.63.14 (CVE backport; not installed), `nixos/mysql` insecure-default-auth fix + `initialScript` follow-up (we don't run MySQL), `incus` 7.2 backports (we use podman). **Zero commits touch neovim paths**, and stable is only consumed via `pkgs.stable.neovim`, so none of these reach the system.
+- Incidental: the `nixos-25.11` branch shows no commits since 2026-06-30 — quiet/winding down.
+- **Conclusion:** a stable-pin refresh buys us nothing right now — security-fix-only and in packages/modules we don't use. Deprioritize until 25.11 gets a neovim bump (or a fix inside neovim's closure).
 
 ### den
 
