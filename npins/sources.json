@@ -74,9 +74,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
-      "url": "https://github.com/hercules-ci/flake-parts/archive/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb.tar.gz",
-      "hash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4="
+      "revision": "024633cd702b10285db5cb19b40ad48d2399ba60",
+      "url": "https://github.com/hercules-ci/flake-parts/archive/024633cd702b10285db5cb19b40ad48d2399ba60.tar.gz",
+      "hash": "sha256-zTwuwezD0w3hpga6a6P8emidzAZFyWqlNeRBlpWOOl8="
     },
     "nix-amd-ai-nix-darwin": {
       "type": "Git",
@@ -87,9 +87,9 @@
       },
       "branch": "master",
       "submodules": false,
-      "revision": "a1fa429e945becaf60468600daf649be4ba0350c",
-      "url": "https://github.com/nix-darwin/nix-darwin/archive/a1fa429e945becaf60468600daf649be4ba0350c.tar.gz",
-      "hash": "sha256-rCPytmKNjctLloB6UgK5CRrHSwV4b0ygxtJLPPp8R14="
+      "revision": "bb0b90dbd54e207100de72b5dcbe3188c98a4b69",
+      "url": "https://github.com/nix-darwin/nix-darwin/archive/bb0b90dbd54e207100de72b5dcbe3188c98a4b69.tar.gz",
+      "hash": "sha256-P0/GhewcEQmAbzq3QunNWY2jLJaYH9F6c/5dEM/jQ4M="
     },
     "nix-amd-ai-nixpkgs-lib": {
       "type": "Git",
@@ -100,9 +100,9 @@
       },
       "branch": "master",
       "submodules": false,
-      "revision": "de42d44212d207476489bce163375d8306a26d59",
-      "url": "https://github.com/nix-community/nixpkgs.lib/archive/de42d44212d207476489bce163375d8306a26d59.tar.gz",
-      "hash": "sha256-0iaTCZDEORJeWamOjfDZaoZZx686f7QO5oL3ynmj+ew="
+      "revision": "d0f596215fbb1603854039023c281b7c2ed1fd33",
+      "url": "https://github.com/nix-community/nixpkgs.lib/archive/d0f596215fbb1603854039023c281b7c2ed1fd33.tar.gz",
+      "hash": "sha256-Kgup1sH+/4qilwusTsSZ4PVjvVABEu5mrgWcZqZ7ePw="
     },
     "nixos-hardware": {
       "type": "Git",
