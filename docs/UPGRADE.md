@@ -160,21 +160,31 @@ Per-pin dates:
 
 - **Created:** 2026-04-12 · **Updated:** 2026-05-26
 - **Current pin:** `nixos-25.11.11422.25f538306313`
+- **Latest channel snapshot:** `nixos-25.11.12484.b6018f87da91` (branch HEAD `b6018f87`, snapshot 12484)
 - **Tracked packages:** neovim (via `pkgs.stable.neovim` in `modules/den.nix`)
 
 #### Latest investigation
 
-_(none yet)_
+- **Created:** 2026-10-23 · **Updated:** 2026-10-23
+- Verified by extracting `pkgs/by-name/ne/neovim-unwrapped/package.nix` from both channel tarballs: neovim is **0.11.7 at both the pinned snapshot and the latest snapshot** (`nixos-25.11.12484.b6018f87da91`). The only tracked package sees no version change.
+- **Conclusion:** a stable-pin refresh is a security-fix-only no-op for this config. Lowest priority; do it whenever convenient (e.g. ride along with an unstable update).
 
 ### den
 
 - **Created:** 2026-03-29 · **Updated:** 2026-05-27
-- **Current pin:** `vic/den` @ `fba6781` (main)
+- **Current pin:** `vic/den` @ `fba6781` (main, commit dated 2026-05-27) — sits between v0.17.0 (2026-05-21) and v0.18.0 (2026-06-23)
+- **Upstream:** HEAD `0f7675b` (2026-10-21), **79 commits ahead** of our pin. Latest release **v0.19.0** (2026-09-24).
+- **⚠ Org moved: `vic/den` → `denful/den`.** GitHub redirects old URLs, so `npins update den` still works and the pin keeps referencing `vic` — consider re-adding as `denful/den` for cleanliness.
 - **Tracked:** framework itself — see [den changelog](https://den.oeiuwq.com/releases/) before updating.
 
 #### Latest investigation
 
-_(none yet)_
+- **Created:** 2026-10-23 · **Updated:** 2026-10-23
+- Update spans two releases plus a month of main: **v0.18.0** (2026-06-23) and **v0.19.0** (2026-09-24) + 4 weeks of unreleased commits.
+- **v0.18.0 highlights** (major internal rework): gen-schema entity port, resolver decoupling, nine delivery mechanisms unified into one `deliver { from; to; at; mode }` edge algebra. **Breaking change:** entity-arg binding is now scoped (inert outside its context); cross-entity delivery must go through `provides`/policy. Local impact: checked against `modules/den.nix` — we only use `includes` + `den.provides.*`/`den.aspects.*` references, no cross-entity entity-arg binding, so this should not bite us.
+- **v0.19.0 highlights:** `pipe.broadcast`, gen-schema HEAD via the gen hub, host-qualified aspect resolution, plus many silent-drop fixes in forward classes/routes.
+- No open `heads-up` announcements since April (the only one, `entity.aspect` reference change, predates our pin).
+- **Conclusion:** moderate risk — the largest internal rework since we started tracking den, though our config surface is simple. Validate with a full build; if den breaks, rollback is per-pin (`git checkout HEAD~1 npins/sources.json`).
 
 ### den helper pins (flake-aspects, import-tree, with-inputs)
 
@@ -187,36 +197,55 @@ _(none yet)_
 
 #### Latest investigation
 
-_(none yet)_
+- **Created:** 2026-10-23 · **Updated:** 2026-10-23
+- **flake-aspects:** 1 commit behind (`e5bbf7be`, 2026-08-31) — purely "update `vic` to `denful`" org rename. Trivial.
+- **import-tree:** 5 commits behind (`eb1b52e`, 2026-09-03) — `scopedImport` gains a `_file` attribute, `result` now returns a lambda usable directly with `type.submodule`, and a fix for import-tree filtering with explicit files in a path. No breaking changes.
+- **with-inputs:** 13 commits behind (`641d01e`, 2026-10-18) — fixes for `from.flake` sources and complex cross-project `inputOverrides` patterns (including one revert). No breaking changes.
+- **Conclusion:** safe, low-risk updates. Update all three **together with den** as the tracking note above says — they are part of the same framework family.
 
 ### home-manager
 
 - **Created:** 2026-03-29 · **Updated:** 2026-07-31
-- **Current pin:** `nix-community/home-manager` @ `bf9ce9f` (master)
+- **Current pin:** `nix-community/home-manager` @ `bf9ce9f` (master, 2026-07-31)
+- **Upstream:** HEAD `6d9655f` (2026-10-23), **437 commits ahead** of our pin.
 
 #### Latest investigation
 
-_(none yet)_
+- **Created:** 2026-10-23 · **Updated:** 2026-10-23
+- **Motivation:** the two `evaluation warning: stdenv.isLinux/isDarwin is deprecated` lines reported after the nixpkgs update were traced to this stale pin (verified present at eval today with the current pin). A refresh is expected to clear them; confirm at eval time after updating.
+- **Oct 15 deprecation-removal wave (~40 modules):** old option aliases removed across git, vscode, firefox, thunderbird, mako, kanshi, gpg-agent, zsh-adjacent tools, etc. Our HM usage is modern (`programs.git.settings.user`, zsh, starship, fzf, zoxide, btop, wezterm, plain `home.packages`) — none of the removed aliases are in use. Low risk.
+- **Notable at HEAD:** the `opencode` HM module gained OpenCode 2 CLI-settings support — not applicable to us (we only install the `opencode` package, not `programs.opencode`).
+- HM master tracks nixpkgs unstable (26.11 pre), matching our freshly updated nixpkgs pin.
+- **Conclusion:** recommended next update after nixpkgs — clears the deprecated-accessor warnings and keeps master aligned with unstable. Validate with a full build.
 
 ### nixos-hardware
 
 - **Created:** 2026-03-30 · **Updated:** 2026-05-26
-- **Current pin:** `NixOS/nixos-hardware` @ `ef4efb8` (master)
+- **Current pin:** `NixOS/nixos-hardware` @ `ef4efb8` (master, 2026-05-26)
+- **Upstream:** HEAD `1b418b8` (2026-10-22), **131 commits ahead** of our pin.
 
 #### Latest investigation
 
-_(none yet)_
+- **Created:** 2026-10-23 · **Updated:** 2026-10-23
+- Our module (`framework/desktop/amd-ai-max-300-series`) is **byte-identical** between pin and HEAD (verified by diffing the raw file).
+- Framework-related changes upstream since the pin touch only the 13"/16" laptops (audio device priority fix, 16" libinput quirk removal) — not the Desktop. New additive option family `hardware.amdgpu.dcDebugMask` in `common/gpu/amd` is available if we ever need GPU debug masks.
+- **Conclusion:** zero-risk update (our module unchanged). Can be updated anytime.
 
 ### nix-amd-ai
 
 - **Created:** 2026-06-20 · **Updated:** 2026-10-12
-- **Current pin:** `noamsto/nix-amd-ai` @ `2b53592` (main)
-- **Helper pins** (locked by the same flake, created 2026-06-20): `flake-parts` @ `f7c1a2d` (updated 2026-05-13), `nix-darwin` @ `a1fa429` (updated 2026-06-18), `nixpkgs.lib` @ `de42d44` (updated 2026-06-14)
+- **Current pin:** `noamsto/nix-amd-ai` @ `2b53592` (main, 2026-10-12)
+- **Upstream:** HEAD `5b82496` (2026-10-23), **4 commits ahead** of our pin.
+- **Helper pins** (locked by the same flake, created 2026-06-20): `flake-parts` @ `f7c1a2d` (22 behind, HEAD 2026-10-01, flake-lock updates only), `nix-darwin` @ `a1fa429` (35 behind, HEAD 2026-10-23, mostly CI/darwin-etc fixes), `nixpkgs.lib` @ `de42d44` (391 behind, HEAD 2026-10-18, lib-level maintenance)
 - **Tracked:** NPU/ROCm driver stack for the Framework's AMD AI accelerator.
 
 #### Latest investigation
 
-_(none yet)_
+- **Created:** 2026-10-23 · **Updated:** 2026-10-23
+- Version bumps in the 4 new commits: **Lemonade 2026.41.1 → 2026.43.3** (we enable Lemonade — this is the substantive change; the Lemonade C++/web/Tauri build will be rebuilt, adding build time), **FastFlowLM 1.0.9** (we run with FastFlowLM disabled), **gaia 0.25.0** (not used by us).
+- Checked the `modules/amd-npu.nix` option surface at pin vs HEAD: **no options added or removed** — our `hardware.amd-npu` settings (enable/enableNPU/enableVulkan/enableROCm/gpuMemory/enableLemonade/lemonade.*) remain valid.
+- The cachix binary cache (`nix-amd-ai.cachix.org`, already configured) may serve the new Lemonade build.
+- **Conclusion:** low-risk update; only visible effect is a Lemonade upgrade (plus possible rebuild time if not cache-hit). Helper pins are internal to its flake eval and safe to refresh alongside.
 
 ---
 
