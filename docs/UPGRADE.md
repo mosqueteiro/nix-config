@@ -208,8 +208,8 @@ Per-pin dates:
 
 ### home-manager
 
-- **Created:** 2026-03-29 · **Updated:** 2026-07-31
-- **Current pin:** `nix-community/home-manager` @ `bf9ce9f` (master, 2026-07-31)
+- **Created:** 2026-03-29 · **Updated:** 2026-10-23
+- **Current pin:** `nix-community/home-manager` @ `2cd3234` (master, 2026-10-24 UTC)
 - **Upstream:** HEAD `6d9655f` (2026-10-23), **437 commits ahead** of our pin.
 
 #### Latest investigation
@@ -220,6 +220,7 @@ Per-pin dates:
 - **Notable at HEAD:** the `opencode` HM module gained OpenCode 2 CLI-settings support — not applicable to us (we only install the `opencode` package, not `programs.opencode`).
 - HM master tracks nixpkgs unstable (26.11 pre), matching our freshly updated nixpkgs pin.
 - **Conclusion:** recommended next update after nixpkgs — clears the deprecated-accessor warnings and keeps master aligned with unstable. Validate with a full build.
+- **Update outcome (2026-10-23):** pin moved `bf9ce9fe` (2026-07-31) → `2cd32349` (2026-10-24 UTC, one day past the investigated HEAD `6d9655f` — master kept moving, verified `2cd32349` is the new branch HEAD). Build passed with **no `stdenv.isLinux/isDarwin` deprecation warnings** — they are gone, as traced in the nixpkgs investigation. Only HM tooling derivations rebuilt; everything else cache-hit.
 
 ### nixos-hardware
 
